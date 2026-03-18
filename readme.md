@@ -14,7 +14,7 @@ config.json con :
 }
 
 assets (carpeta opcional y aun no disponible)
-pages (carpeta obligatoria con todos los .mm y con subcarpetas para hacer categorias)
-index.mm la pagina inicial de la web
+pages (carpeta obligatoria con todos los .mmx y con subcarpetas para hacer categorias)
+index.mmx la pagina inicial de la web
 
 tambien tienes que especificar el input, output y si es la documentacion entera o solo una pagina en el inicio del main.js
