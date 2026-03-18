@@ -213,20 +213,22 @@ function convertMmxFile(inputPath, outputPath) {
 
 
 
-//vaciar la carpeta del output antes de generarlo
-if (CONFIG.sidebar){
-  const dir = CONFIG.project.output
-  for (const file of fs.readdirSync(dir)) {
-    const fullPath = path.join(dir, file);
+//vaciar la carpeta (si existe) del output antes de generarlo
+if (CONFIG.sidebar) {
+  const dir = CONFIG.project.output;
 
-    if (fs.statSync(fullPath).isDirectory()) {
-      fs.rmSync(fullPath, { recursive: true, force: true });
-    } else {
-      fs.unlinkSync(fullPath);
+  if (fs.existsSync(dir)) {
+    for (const file of fs.readdirSync(dir)) {
+      const fullPath = path.join(dir, file);
+
+      if (fs.statSync(fullPath).isDirectory()) {
+        fs.rmSync(fullPath, { recursive: true, force: true });
+      } else {
+        fs.unlinkSync(fullPath);
+      }
     }
   }
 }
-
 
 function main() {
   if (CONFIG.sidebar) {
