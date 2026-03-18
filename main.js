@@ -228,15 +228,6 @@ if (CONFIG.sidebar){
 }
 
 
-
-
-
-
-
-
-
-
-
 function main() {
   if (CONFIG.sidebar) {
     const { source, output } = CONFIG.project;
