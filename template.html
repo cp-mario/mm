@@ -4,6 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{title}}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.8.4/dist/plyr.css" />
+    <script src="https://cdn.jsdelivr.net/npm/plyr@3.8.4/dist/plyr.polyfilled.js"></script>
+
 </head>
     <body>
         <button id="icon-btn2">
@@ -55,6 +58,14 @@
         margin-bottom: 2px;
     }
 
+    main{
+        margin-bottom: 200px;
+    }
+
+    .plyr {
+        padding: 20px;
+        padding-left: 0;
+    }
 
     h1,h2,h3,h4,h5,h6  {
         font-weight: bold;
@@ -76,13 +87,11 @@
 
 
     img {
-        width: 300px;
+        width: 100%;
         height: auto;
         padding: 20px;
         padding-left: 0;
     }
-
-
 
     .copy-btn {
         background: transparent;
@@ -166,6 +175,7 @@
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/dist/medium-zoom.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         if (typeof hljs !== 'undefined') {
@@ -176,10 +186,27 @@
     });
 
 
+        document.querySelectorAll('audio[src^="assets/"]').forEach(audio => {
+            const original = audio.getAttribute("src");
+            audio.src = prefix + original;
+        });
+
+
         document.querySelectorAll('a[href^="assets/"]').forEach(a => {
         const original = a.getAttribute("href");
         a.href = prefix + original;
     });
+
+     document.querySelectorAll('video[src^="assets/"]').forEach(video => {
+        const original = video.getAttribute("src");
+        video.src = prefix + original;
+    });
+
+    document.querySelectorAll('img[src^="assets/"]').forEach(img => {
+        const original = img.getAttribute("src");
+        img.src = prefix + original;
+    });
+
 
         document.querySelectorAll('a[href^="#"]').forEach(a => {
         a.target = "_self"
@@ -229,5 +256,8 @@
             });
         });
     });
+    mediumZoom('img');
+    const players = Plyr.setup('video');
+    const aundioPlayers = Plyr.setup('audio');
 </script>
 </html>

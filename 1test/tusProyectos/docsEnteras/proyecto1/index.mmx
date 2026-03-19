@@ -52,6 +52,14 @@ You can link to another page on your document like the heading but with pages/pa
 
 some inline `codeffffffff df df dsf fd d it can be in diferent lines` or 
 
+A video from a URL
+!!(https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4)
+
+
+audio from assets/
+!!!(assets/audio.mp3) or from a URL
+!!!(https://placeholder.guru/api/audio?type=tune)
+
 
 :::code auto
 function test() { gf g fg fg fg fg f g gf fdg g f g fgd gf g gf gf fg g g fg

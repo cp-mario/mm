@@ -69,6 +69,8 @@ monoline: [
     }
   ],
   inline: [
+    { regex: /!!!\(([^)]+)\)/g, replace: '<audio src="$1" controls></audio>' },
+    { regex: /!!\(([^)]+)\)/g, replace: '<video src="$1" controls></video>' },
     { regex: /!\[([^\]]*)\]\(([^)]+)\)/g, replace: '<img alt="$1" src="$2">' },
     { regex: /\[([^\]]+)\]\(([^)]+)\)/g, replace: '<a target="_blank" href="$2">$1</a>' },
     { regex: /\*\*(.*?)\*\*/g, replace: '<strong>$1</strong>' },

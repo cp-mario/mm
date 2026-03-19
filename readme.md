@@ -76,3 +76,11 @@ your-project/
 ```
 
 You can see how it is and more info included the MM sintaxis in https://cp-mario.github.io/MMX/ that is made with MMX
+
+
+
+This proyect uses:
+https://github.com/sampotts/plyr
+https://github.com/highlightjs/highlight.js/
+https://github.com/francoischalifour/medium-zoom
+https://fonts.google.com/
