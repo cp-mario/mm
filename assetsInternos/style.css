@@ -26,7 +26,8 @@ main{
     margin-bottom: 200px;
     max-width: 1000px;
     min-width: 0px;
-    padding-inline: 10%
+    padding-inline: 10%;
+    flex-grow: 1;
 }
 
 .plyr {
