@@ -17,21 +17,6 @@ const iconCollapse = `
 </svg>`;
 
 
-
-
-//Cargar style.css
-const link = document.createElement("link");
-link.rel = "stylesheet";
-link.href =  prefix + "assetsInternos/style.css";
-document.head.appendChild(link);
-
-//Cargar styleSidebar.css
-const linkSidebar = document.createElement("link");
-linkSidebar.rel = "stylesheet";
-linkSidebar.href =  prefix + "assetsInternos/styleSidebar.css";
-document.head.appendChild(linkSidebar);
-
-
 let nombreProyecto
 
 
