@@ -115,6 +115,21 @@ function renderNode(node, container) {
       icon.innerHTML = iconCollapse;
     }
 
+
+    const tree = document.getElementById("sidebar-menu");
+
+    // Restaurar scroll
+    const savedScroll = sessionStorage.getItem("sidebar-menu");
+    if (savedScroll !== null) {
+        tree.scrollTop = parseInt(savedScroll, 10);
+    }
+
+    // Guardar scroll en tiempo real
+    tree.addEventListener("scroll", () => {
+        sessionStorage.setItem("sidebar-menu", tree.scrollTop);
+    });
+
+
     // --- EVENTO CLICK ---
     header.addEventListener("click", () => {
       const collapsed = sub.classList.toggle("collapsed");
