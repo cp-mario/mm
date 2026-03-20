@@ -182,18 +182,6 @@ function processPagesRecursive(sourceDir, outputDir, stats, options) {
   }
 }
 
-const scriptContent = `
-  const path = window.location.pathname;
-  const parts = path.split("/").filter(p => p.length > 0);
-  const rootIndex = parts.indexOf("pages");
-  const depth = rootIndex === -1 ? 0 : parts.length - (rootIndex + 1);
-  const prefix = "../".repeat(depth);
-
-  const script = document.createElement("script");
-  script.src = prefix + "assetsInternos/script.js";
-  document.body.appendChild(script);
-`;
-
 function convertMmxFile(inputPath, outputPath) {
   const content = fs.readFileSync(inputPath, "utf8");
   const template = fs.readFileSync("./template.html", "utf8");
@@ -204,8 +192,7 @@ function convertMmxFile(inputPath, outputPath) {
 
   const finalTemplate = template
     .replaceAll("{{title}}", title)
-    .replaceAll("{{content}}", htmlContent)
-    .replaceAll("{{script}}", scriptContent);
+    .replaceAll("{{content}}", htmlContent);
 
   fs.writeFileSync(outputPath, finalTemplate, "utf8");
 }
@@ -254,8 +241,7 @@ function main() {
 
       const finalTemplate = template
         .replaceAll("{{title}}", title)
-        .replaceAll("{{content}}", htmlContent)
-        .replaceAll("{{script}}", scriptContent);
+        .replaceAll("{{content}}", htmlContent);
 
       const dir = path.dirname(output);
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });

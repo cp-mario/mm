@@ -1,6 +1,6 @@
 # MMX
 
-This utility allows you to create documentation or a single‑page site using a custom format similar to Markdown.
+This utility allows you to create documentation or a single‑page(Not yet avaible) site using a custom format similar to Markdown.
 
 To make the documentation work, your project must contain the following structure:
 

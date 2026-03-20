@@ -1,8 +1,6 @@
 //Este script se cargara en cada html de la documentacion al ejecutarlo
 
-
-
-//Iconos
+//Iconos sidebar
 const iconExpand = `
 <svg width="18" height="18" viewBox="0 0 32 32" fill="none">
   <rect x="2" y="2" width="28" height="28" rx="4" fill="#1E88E5"/>
@@ -21,13 +19,17 @@ const iconCollapse = `
 
 
 
+//Cargar style.css
+const link = document.createElement("link");
+link.rel = "stylesheet";
+link.href =  prefix + "assetsInternos/style.css";
+document.head.appendChild(link);
 
-
-// ===============================================================
-// 1. Calcular prefix según profundidad dentro de /pages/
-// ===============================================================
-
-
+//Cargar styleSidebar.css
+const linkSidebar = document.createElement("link");
+linkSidebar.rel = "stylesheet";
+linkSidebar.href =  prefix + "assetsInternos/styleSidebar.css";
+document.head.appendChild(linkSidebar);
 
 
 let nombreProyecto
@@ -41,9 +43,7 @@ fetch(prefix + "config.json")
 
 
 
-// ===============================================================
 // 2. Cargar sidebar.html
-// ===============================================================
 fetch(prefix + "assetsInternos/sidebar.html")
   .then(res => {
     if (!res.ok) throw new Error("No se pudo cargar sidebar.html");
@@ -192,3 +192,89 @@ function cargarMenuHamburguesa(){
   // Ejecutar SOLO cuando se cruza 999px
   mq.addEventListener("change", handleChange);
 }
+
+
+
+
+
+//arreglar rutas hacia assets
+
+    document.querySelectorAll('audio[src^="assets/"]').forEach(audio => {
+        const original = audio.getAttribute("src");
+        audio.src = prefix + original;
+    });
+    document.querySelectorAll('a[href^="assets/"]').forEach(a => {
+    const original = a.getAttribute("href");
+    a.href = prefix + original;
+});
+
+ document.querySelectorAll('video[src^="assets/"]').forEach(video => {
+    const original = video.getAttribute("src");
+    video.src = prefix + original;
+});
+
+document.querySelectorAll('img[src^="assets/"]').forEach(img => {
+    const original = img.getAttribute("src");
+    img.src = prefix + original;
+});
+
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.target = "_self"
+});
+
+    document.querySelectorAll('a[href^="pages/"]').forEach(a => {
+    const original = a.getAttribute("href");
+    a.target = "_self"
+    a.href = prefix + original;
+});
+
+
+
+
+
+
+
+document.querySelectorAll('pre.multiline-code .copy-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+        // 🔒 1. BLOQUEAR EL BOTÓN INMEDIATAMENTE
+        btn.classList.add('copied', 'disabled');
+        
+        // Guardar el contenido original para restaurarlo después
+        const originalHTML = btn.innerHTML;
+        // 2. Cambiar el contenido al estado "Copiado"
+        btn.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span class="copy-text">Copiado</span>
+        `;
+        try {
+            const pre = btn.closest('pre.multiline-code');
+            const code = pre.querySelector('code');
+            if (!code) throw new Error('No code found');
+            await navigator.clipboard.writeText(code.innerText);
+            // 3. DESBLOQUEAR DESPUÉS DE 2 SEGUNDOS
+            setTimeout(() => {
+                btn.classList.remove('copied', 'disabled');
+                btn.innerHTML = originalHTML;
+            }, 1000);
+        } catch (err) {
+            console.error('Error al copiar:', err);
+            // En caso de error, desbloquear inmediatamente para reintentar
+            btn.classList.remove('copied', 'disabled');
+            btn.innerHTML = originalHTML;
+        }
+    });
+});
+
+
+
+
+const codes = document.querySelectorAll('code[data-auto="true"]');
+codes.forEach(el => {
+    hljs.highlightElement(el);
+});
+
+mediumZoom('img');
+const players = Plyr.setup('video');
+const aundioPlayers = Plyr.setup('audio');

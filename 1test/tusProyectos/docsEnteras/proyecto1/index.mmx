@@ -62,7 +62,7 @@ audio from assets/
 
 
 :::code auto
-function test() { gf g fg fg fg fg f g gf fdg g f g fgd gf g gf gf fg g g fg
+function test() {
     return "with auto highlighting if you put the auto tag";
 }
 :::

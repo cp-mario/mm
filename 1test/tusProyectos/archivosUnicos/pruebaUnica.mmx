@@ -1,1 +1,74 @@
-#Esto es una prueba
+# MMX (:
+This title dont have id and because is the # title, its the title of the page too
+
+## Title 2 %{2}%
+This title do have id
+
+:::note
+This is a note
+:::
+
+You can add blank lines
+#b
+#b
+#b
+#b
+#b
+#b
+#b
+#b
+#b
+#b
+#b
+#b
+#b
+#b
+#b
+#b
+#b
+#b
+#b
+#b
+#b
+#b
+#b
+#b
+#b
+#b
+
+Also you can use **bold**, *italic* or ***both***
+
+![Image](https://placehold.net/main.svg)
+You can use images from a URL
+![Image](assets/foto.png)
+or from the assets folder
+![A alternative if the image dont load](assets/fotoquenoexiste.png)
+Also you can put a URL
+[Example](https://example.com)
+And you can go to a heading in your document like a URL but with #id instead of the URL
+[H2](#2)
+You can link to another page on your document like the heading but with pages/path/to/the/page/from/pages (remember the .html)
+[Introduction](pages/Introduction MMX.html)
+
+some inline `codeffffffff df df dsf fd d it can be in diferent lines` or 
+
+A video from a URL
+!!(https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4)
+
+
+audio from assets/
+!!!(assets/audio.mp3) or from a URL
+!!!(https://placeholder.guru/api/audio?type=tune)
+
+
+:::code auto
+function test() {
+    return "with auto highlighting if you put the auto tag";
+}
+:::
+
+:::code
+function test() {
+    return "Without highlighting if youd dont put auto";
+}
+:::

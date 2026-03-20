@@ -1,263 +1,46 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{title}}</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.8.4/dist/plyr.css" />
-    <script src="https://cdn.jsdelivr.net/npm/plyr@3.8.4/dist/plyr.polyfilled.js"></script>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-</head>
+        <!-- Titulo añadido desde main.js al generar el html --> 
+        <title>{{title}}</title>
+
+        <!-- Estilos y scripts externos -->   
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.8.4/dist/plyr.css"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/plyr@3.8.4/dist/plyr.polyfilled.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/dist/medium-zoom.min.js"></script>
+        
+        <!-- Enlazar el script y el css, y calacular la distancia a la raiz para tener el prefijo (prefix) --> 
+        <script>
+            const path = window.location.pathname;
+            const parts = path.split("/").filter(p => p.length > 0);
+            const rootIndex = parts.indexOf("pages");
+            const depth = rootIndex === -1 ? 0 : parts.length - (rootIndex + 1);
+            const prefix = "../".repeat(depth); 
+            const script = document.createElement("script");
+            
+            //Cargar script.js
+            script.src = prefix + "assetsInternos/script.js";
+            document.head.appendChild(script);
+        </script>
+
+    </head>
     <body>
+        <!-- Boton de sacar la sidebar -->
         <button id="icon-btn2">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
             <path d="M3 6h18M3 12h18M3 18h18" stroke="black" stroke-width="2"/>
           </svg>
         </button>
-        <main>{{content}}</main>
+        <main>
+            <!-- Donde se insertara el contenido de la pagina --> 
+            {{content}}
+        </main>
+        <!-- Donde se cargara la sidebar desde script.js -->
         <aside id="sidebar-container"></aside>
     </body>
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
-    
-    .note{
-        display: flex;
-        flex-direction: column;
-        gap: 0px;
-        margin-top: 10px;
-        margin-bottom: 10px;
-        background-color: rgb(255, 255, 131);
-        border-radius: 15px;
-        padding: 5px;
-        padding-left: 10px;
-        padding-right: 10px;
-        
-    }
-
-
-
-    /* Horizontal */
-    @media screen and (orientation: landscape), 
-        screen and (min-width: 1000px) {
-        
-        main {
-            align-items: center;
-            padding-right: 10%;
-            padding-left: 10%;
-        }
-
-        aside{
-            top: 0;
-            left: 0;
-    }}
-    
-    .note > p{
-        margin-top: 2px;
-        margin-bottom: 2px;
-    }
-
-    main{
-        margin-bottom: 200px;
-    }
-
-    .plyr {
-        padding: 20px;
-        padding-left: 0;
-    }
-
-    h1,h2,h3,h4,h5,h6  {
-        font-weight: bold;
-    }
-
-    .note-label {
-    color: #007bff;
-    font-weight: bolder;
-    }
-
-    body{
-        display: block;
-        font-family: "Lato", sans-serif;
-        align-items: center;
-        margin: 0;
-        background-color: #f3f7fb;
-    }
-
-
-
-    img {
-        width: 100%;
-        height: auto;
-        padding: 20px;
-        padding-left: 0;
-    }
-
-    .copy-btn {
-        background: transparent;
-        border-color: transparent;
-        display: flex;
-        justify-content: stretch;
-        margin: 2px;
-        position: absolute;
-        top: 8px;
-        right: 8px;
-
-    }
-
-    .copy-btn:hover {
-        background: rgba(255, 255, 255, 0.25);
-        border-radius: 5px;
-    }
-
-
-    html {
-        scroll-behavior: smooth;
-    }
-
-    /* codigo inline */
-    .inline-code{
-        border-radius: 5px;
-        background-color: #c3c3c3;
-        padding-inline: 3px;
-    }
-
-    /* todos los codes  */
-    code {
-        font-family: "JetBrains Mono", monospace;
-    }
-
-    /* bloque codigo multilinea  */
-    .multiline-code > code{
-        border-radius: 5px;
-        color: #C9D1D9;
-    }
-
-    /* pre, bloque codigo multilinea, sin highlight   */
-    code:not([data-auto]) {
-        margin: 2px;
-    }
-
-    .multiline-code > code{
-        overflow-x: auto;
-        padding: 1em;
-        margin: 0px;
-        padding-right: 3em !important ;
-    }
-
-    /* pre, bloque codigo multilinea  */
-    .multiline-code{
-        background-color: #0D1117;
-        border-radius: 5px;
-        display: flex;
-        position: relative;
-        justify-content: space-between;
-        align-items: flex-start;
-    }
-
-    .copy-text{
-        color: white;
-
-    }
-
-    pre.multiline-code .copy-btn.disabled {
-        pointer-events: none;
-        cursor: default;
-    }
-
-
-
-</style>
-
-<script>
-    {{script}}
-</script>
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/dist/medium-zoom.min.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        if (typeof hljs !== 'undefined') {
-            document.querySelectorAll('code[data-auto="true"]').forEach(el => {
-                hljs.highlightElement(el);
-            });
-        }
-    });
-
-
-        document.querySelectorAll('audio[src^="assets/"]').forEach(audio => {
-            const original = audio.getAttribute("src");
-            audio.src = prefix + original;
-        });
-
-
-        document.querySelectorAll('a[href^="assets/"]').forEach(a => {
-        const original = a.getAttribute("href");
-        a.href = prefix + original;
-    });
-
-     document.querySelectorAll('video[src^="assets/"]').forEach(video => {
-        const original = video.getAttribute("src");
-        video.src = prefix + original;
-    });
-
-    document.querySelectorAll('img[src^="assets/"]').forEach(img => {
-        const original = img.getAttribute("src");
-        img.src = prefix + original;
-    });
-
-
-        document.querySelectorAll('a[href^="#"]').forEach(a => {
-        a.target = "_self"
-    });
-        document.querySelectorAll('a[href^="pages/"]').forEach(a => {
-        const original = a.getAttribute("href");
-        a.target = "_self"
-        a.href = prefix + original;
-    });
-
-    document.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('pre.multiline-code .copy-btn').forEach(btn => {
-            btn.addEventListener('click', async () => {
-                // 🔒 1. BLOQUEAR EL BOTÓN INMEDIATAMENTE
-                btn.classList.add('copied', 'disabled');
-                
-                // Guardar el contenido original para restaurarlo después
-                const originalHTML = btn.innerHTML;
-
-                // 2. Cambiar el contenido al estado "Copiado"
-                btn.innerHTML = `
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                    <span class="copy-text">Copiado</span>
-                `;
-
-                try {
-                    const pre = btn.closest('pre.multiline-code');
-                    const code = pre.querySelector('code');
-                    if (!code) throw new Error('No code found');
-
-                    await navigator.clipboard.writeText(code.innerText);
-
-                    // 3. DESBLOQUEAR DESPUÉS DE 2 SEGUNDOS
-                    setTimeout(() => {
-                        btn.classList.remove('copied', 'disabled');
-                        btn.innerHTML = originalHTML;
-                    }, 1000);
-
-                } catch (err) {
-                    console.error('Error al copiar:', err);
-                    // En caso de error, desbloquear inmediatamente para reintentar
-                    btn.classList.remove('copied', 'disabled');
-                    btn.innerHTML = originalHTML;
-                }
-            });
-        });
-    });
-    mediumZoom('img');
-    const players = Plyr.setup('video');
-    const aundioPlayers = Plyr.setup('audio');
-</script>
 </html>

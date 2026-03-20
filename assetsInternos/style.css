@@ -1,0 +1,139 @@
+/* Importar las fuentes de fonts.google.com */
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+
+.note{
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    background-color: rgb(255, 255, 131);
+    border-radius: 15px;
+    padding: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    
+}
+
+/* Horizontal */
+@media screen and (orientation: landscape), 
+    screen and (min-width: 1000px) {
+    
+    main {
+        align-items: center;
+        padding-right: 10%;
+        padding-left: 10%;
+    }
+    aside{
+        top: 0;
+        left: 0;
+}}
+
+.note > p{
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+main{
+    margin-bottom: 200px;
+}
+
+.plyr {
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+h1,h2,h3,h4,h5,h6  {
+    font-weight: bold;
+}
+
+.note-label {
+color: #007bff;
+font-weight: bolder;
+}
+
+body{
+    display: block;
+    font-family: "Lato", sans-serif;
+    align-items: center;
+    margin: 0;
+    background-color: #f3f7fb;
+}
+
+img {
+    width: 100%;
+    height: auto;
+    padding: 20px;
+    padding-left: 0;
+}
+
+.copy-btn {
+    background: transparent;
+    border-color: transparent;
+    display: flex;
+    justify-content: stretch;
+    margin: 2px;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+}
+
+.copy-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 5px;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+/* codigo inline */
+.inline-code{
+    border-radius: 5px;
+    background-color: #c3c3c3;
+    padding-inline: 3px;
+}
+
+/* todos los codes  */
+code {
+    font-family: "JetBrains Mono", monospace;
+}
+
+/* bloque codigo multilinea  */
+.multiline-code > code{
+    border-radius: 5px;
+    color: #C9D1D9;
+}
+
+/* pre, bloque codigo multilinea, sin highlight   */
+code:not([data-auto]) {
+    margin: 2px;
+}
+
+.multiline-code > code{
+    overflow-x: auto;
+    padding: 1em;
+    margin: 0px;
+    padding-right: 3em !important ;
+}
+
+/* pre, bloque codigo multilinea  */
+.multiline-code{
+    background-color: #0D1117;
+    border-radius: 5px;
+    display: flex;
+    position: relative;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.copy-text{
+    color: white;
+}
+
+pre.multiline-code .copy-btn.disabled {
+    pointer-events: none;
+    cursor: default;
+}
