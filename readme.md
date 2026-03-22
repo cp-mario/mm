@@ -47,7 +47,7 @@ Inside the `pages/` folder you can:
 
 ## Configuring the generator
 
-At the beginning of your `main.js`, you must specify:
+At the  `config.mcfg`, you must specify:
 
 - The input folder  
 - The output folder  

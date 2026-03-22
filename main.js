@@ -5,32 +5,13 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { mmxToHtml } from "./scripts/parser.js";
+import { parseMCFG } from "./scripts/MCFGParser.js"
 //=================================================
 
-//Importante
 
-const CONFIG = {
-  deleteOriginals: false,
-  verbose: true,
+//Importar configuración desde config.mcfg
 
-
-  //Canviar esto
-
-  sidebar: true, //documentacion entera (true) o solo un documento (false)
-
-  project: {
-    source: "./1test/tusProyectos/docsEnteras/proyecto1",  //carpeta (mas info en el readme.md)
-    output: "./1test/output/docsEnteras/proyecto1"   //carpeta (mas info en el readme.md)
-  },
-
-  single: {
-    input: "./1test/tusProyectos/archivosUnicos/pruebaUnica.mmx", //archivo.mmx
-    output: "./1test/output/archivosUnicos/pruebaUnica.html"  //archivo que se generara
-  }
-};
-
-//===========================================
-
+const CONFIG = parseMCFG(fs.readFileSync('./config.mcfg', 'utf-8'))
 
 
 // ============================================================================
@@ -203,8 +184,8 @@ function convertMmxFile(inputPath, outputPath) {
 
 
 //vaciar la carpeta (si existe) del output antes de generarlo
-if (CONFIG.sidebar) {
-  const dir = CONFIG.project.output;
+if (!CONFIG.singleFile) {
+  const dir = CONFIG.outputPath;
 
   if (fs.existsSync(dir)) {
     for (const file of fs.readdirSync(dir)) {
@@ -220,21 +201,19 @@ if (CONFIG.sidebar) {
 }
 
 function main() {
-  if (CONFIG.sidebar) {
-    const { source, output } = CONFIG.project;
-    if (!fs.existsSync(source)) {
-      console.error(`❌ Carpeta de origen no existe: ${source}`);
+  if (!CONFIG.singleFile) {
+    if (!fs.existsSync(CONFIG.inputPath)) {
+      console.error(`❌ Carpeta de origen no existe: ${CONFIG.inputPath}`);
       process.exit(1);
     }
-    processProjectStructure(source, output, {
-      deleteOriginals: CONFIG.deleteOriginals,
-      verbose: CONFIG.verbose
+    processProjectStructure(CONFIG.inputPath, CONFIG.outputPath, {
+      deleteOriginals: false,
+      verbose: true
     });
 
   } else {
-    const { input, output } = CONFIG.single;
     try {
-      const content = fs.readFileSync(input, "utf8");
+      const content = fs.readFileSync(singleInputPath, "utf8");
       const template = fs.readFileSync("./template.html", "utf8");
       const htmlContent = mmxToHtml(content);
 
@@ -245,11 +224,11 @@ function main() {
         .replaceAll("{{title}}", title)
         .replaceAll("{{content}}", htmlContent);
 
-      const dir = path.dirname(output);
+      const dir = path.dirname(singleOutputPath);
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
-      fs.writeFileSync(output, finalTemplate, "utf8");
-      console.log(`Generado: ${output}`);
+      fs.writeFileSync(singleOutputPath, finalTemplate, "utf8");
+      console.log(`Generado: ${singleOutputPath}`);
 
     } catch (error) {
       console.error("❌ Error:", error.message);
