@@ -57,11 +57,10 @@ body{
     background-color: #f3f7fb;
 }
 
-img {
+main img {
     width: 100%;
     height: auto;
-    padding: 20px;
-    padding-inline: 0;
+    margin-block: 20px;
 }
 
 .copy-btn {
@@ -153,7 +152,6 @@ main a:hover{
 
 .medium-zoom-overlay, .medium-zoom-image--opened{
     z-index: 1000;
-    padding: 0px;
 }
 
 .medium-zoom-overlay{
