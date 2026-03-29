@@ -18,8 +18,11 @@
 }
 
 .note > p{
-    margin-top: 2px;
-    margin-bottom: 2px;
+    margin-block: 2px;
+}
+
+main p{
+    margin: 0px;
 }
 
 main{
@@ -58,7 +61,7 @@ img {
     width: 100%;
     height: auto;
     padding: 20px;
-    padding-left: 0;
+    padding-inline: 0;
 }
 
 .copy-btn {
@@ -104,6 +107,10 @@ code:not([data-auto]) {
     margin: 2px;
 }
 
+.plyr {
+    margin-block: 15px; /* Margen arriba y abajo del video */
+}
+
 .multiline-code > code{
     overflow-x: auto;
     padding: 1em;
@@ -140,4 +147,15 @@ main a,main a:visited,main a:active {
 main a:hover{
     color: #3ca9c9;
     text-decoration: none;
+}
+
+
+
+.medium-zoom-overlay, .medium-zoom-image--opened{
+    z-index: 1000;
+    padding: 0px;
+}
+
+.medium-zoom-overlay{
+    background: #000000cc !important;
 }
