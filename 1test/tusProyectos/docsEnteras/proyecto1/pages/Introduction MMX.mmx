@@ -5,3 +5,12 @@
 ![Una foto](assets/foto.png)
 !!(assets/video.mp4)
 hi
+
+URL
+[Example](https://example.com)
+Heading in your document like a URL but with #id instead of the URL
+[H2](#2)
+Link to another page on your document like the heading but with pages/path/to/the/page/from/pages (remember the .html) [Scroll save test 00](pages/scrollSaveTest/00.html)
+
+
+## H2 %{2}%

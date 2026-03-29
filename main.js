@@ -90,13 +90,15 @@ function processProjectStructure(sourceDir, outputDir, options = {}) {
   const pagesDest = path.join(outputDir, 'pages');
   if (!fs.existsSync(pagesDest)) fs.mkdirSync(pagesDest, { recursive: true });
 
-  processPagesRecursive(pagesSource, pagesDest, stats, { deleteOriginals, log });
-  //Procesar index.mmx en la raíz del proyecto
+  processPagesRecursive(pagesSource, pagesDest, stats, { deleteOriginals, log, outputRoot: outputDir });
+  // Procesar index.mmx en la raíz del proyecto
   const rootIndexMmx = path.join(sourceDir, "index.mmx");
   if (fs.existsSync(rootIndexMmx)) {
     const rootIndexHtml = path.join(outputDir, "index.html");
     log(`index.mmx → index.html`);
-    convertMmxFile(rootIndexMmx, rootIndexHtml);
+    
+    // 👇 Usar outputDir ya que outputRoot no existe aquí
+    convertMmxFile(rootIndexMmx, rootIndexHtml, outputDir);
     stats.processed++;
   }
 
@@ -131,7 +133,9 @@ function copyDirectoryRecursive(source, destination) {
 }
 
 function processPagesRecursive(sourceDir, outputDir, stats, options) {
-  const { deleteOriginals, log } = options;
+  // 👇 Extraer outputRoot con valor por defecto
+  const { deleteOriginals, log, outputRoot } = options;
+  
   const items = fs.readdirSync(sourceDir);
 
   for (const item of items) {
@@ -141,7 +145,13 @@ function processPagesRecursive(sourceDir, outputDir, stats, options) {
 
     if (stat.isDirectory()) {
       if (!fs.existsSync(destPath)) fs.mkdirSync(destPath, { recursive: true });
-      processPagesRecursive(srcPath, destPath, stats, options);
+      
+      // 👇 CRÍTICO: Propagar outputRoot SIN CAMBIAR
+      processPagesRecursive(srcPath, destPath, stats, { 
+        deleteOriginals, 
+        log, 
+        outputRoot  // 👈 Mismo valor, nunca outputDir
+      });
 
     } else if (item.endsWith('.mmx')) {
       try {
@@ -149,15 +159,16 @@ function processPagesRecursive(sourceDir, outputDir, stats, options) {
         const htmlDest = path.join(outputDir, htmlName);
 
         log(`${item} → ${htmlName}`);
-        convertMmxFile(srcPath, htmlDest);
+        
+        // 👇 outputRoot debe estar definido aquí
+        convertMmxFile(srcPath, htmlDest, outputRoot);
+        
         stats.processed++;
-
         if (deleteOriginals) fs.unlinkSync(srcPath);
       } catch (error) {
         console.error(`  ❌ Error en ${item}:`, error.message);
         stats.errors++;
       }
-
     } else {
       fs.copyFileSync(srcPath, destPath);
       stats.copied++;
@@ -165,7 +176,74 @@ function processPagesRecursive(sourceDir, outputDir, stats, options) {
   }
 }
 
-function convertMmxFile(inputPath, outputPath) {
+// Calcula el prefijo de rutas relativas según la profundidad del archivo
+function calculatePrefix(outputPath, outputRoot) {
+  // Normalizar rutas para evitar problemas con slashes
+  const normalizedOutput = path.normalize(outputPath);
+  const normalizedRoot = path.normalize(outputRoot);
+  
+  // Obtener el directorio del archivo de salida
+  const fileDir = path.dirname(normalizedOutput);
+  
+  // Calcular ruta relativa desde la raíz hasta el directorio del archivo
+  const relativeDir = path.relative(normalizedRoot, fileDir);
+  
+  // Debug (descomenta para ver qué está pasando)
+  // console.log(`[DEBUG] outputPath: ${outputPath}`);
+  // console.log(`[DEBUG] outputRoot: ${outputRoot}`);
+  // console.log(`[DEBUG] fileDir: ${fileDir}`);
+  // console.log(`[DEBUG] relativeDir: "${relativeDir}"`);
+  
+  // Si relativeDir es vacío o '.', el archivo está en la raíz
+  if (!relativeDir || relativeDir === '.' || relativeDir.startsWith('..')) {
+    return './';
+  }
+  
+  // Contar profundidad: dividir por sep del SO o por '/' como fallback
+  const depth = relativeDir.split(path.sep).filter(p => p && p !== '/').length;
+  
+  // Construir prefijo: ../ por cada nivel + ./ al final
+  return '../'.repeat(depth) + './';
+}
+
+// Aplica el prefijo a las rutas de assets y páginas en el HTML generado
+function applyPathPrefix(html, prefix) {
+  // Evitar modificar URLs absolutas o externas
+  const notExternal = '(?!https?://|//|mailto:|tel:)';
+  
+  return html
+    // ========================================
+    // IMÁGENES, AUDIO, VIDEO - Agregar prefijo
+    // ========================================
+    .replace(/(src=["'])(assets\/[^"']+)/g, `$1${prefix}$2`)
+    
+    // ========================================
+    // ENLACES - Agregar prefijo Y corregir target
+    // ========================================
+    
+    // Enlaces a pages/ → prefijo + target="_self"
+    .replace(/<a\s+target="_blank"\s+href=["'](pages\/[^"']+)["']/g, 
+      `<a target="_self" href="${prefix}$1"`)
+    
+    // Enlaces con ancla # → target="_self" (sin prefijo)
+    .replace(/<a\s+target="_blank"\s+href=["'](#[^"']+)["']/g, 
+      `<a target="_self" href="$1"`)
+    
+    // Enlaces a assets/ → prefijo + target="_self"
+    .replace(/<a\s+target="_blank"\s+href=["'](assets\/[^"']+)["']/g, 
+      `<a target="_self" href="${prefix}$1"`)
+    
+    // Enlaces externos (http/https) → mantener target="_blank"
+    // (no los modificamos, ya están bien)
+    
+    // ========================================
+    // HREF (atributo suelto, no solo en <a>)
+    // ========================================
+    .replace(/(href=["'])(pages\/[^"']+)/g, `$1${prefix}$2`)
+    .replace(/(href=["'])(assets\/[^"']+)/g, `$1${prefix}$2`);
+}
+
+function convertMmxFile(inputPath, outputPath, outputRoot) {
   const content = fs.readFileSync(inputPath, "utf8");
   const template = fs.readFileSync("./template.html", "utf8");
   const htmlContent = mmxToHtml(content);
@@ -173,9 +251,15 @@ function convertMmxFile(inputPath, outputPath) {
   const titleMatch = content.match(/^# (.+)$/m);
   const title = titleMatch ? titleMatch[1] : "Documentación";
 
-  const finalTemplate = template
+  // 👇 CALCULAR Y APLICAR PREFIJO
+  const prefix = calculatePrefix(outputPath, outputRoot);
+  
+  let finalTemplate = template
     .replaceAll("{{title}}", title)
     .replaceAll("{{content}}", htmlContent);
+  
+  // Aplicar prefijo a las rutas
+  finalTemplate = applyPathPrefix(finalTemplate, prefix);
 
   fs.writeFileSync(outputPath, finalTemplate, "utf8");
 }
