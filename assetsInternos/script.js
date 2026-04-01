@@ -27,6 +27,21 @@ fetch(prefix + "config.json")
 });
 
 
+(async () => {
+  const exts = ["svg","png","ico","webp","jpg","jpeg"];
+  for (const ext of exts) {
+    const url = prefix + `assets/icon.${ext}`;
+    if ((await fetch(url, { method: "HEAD" })).ok) {
+      document.head.insertAdjacentHTML(
+        "beforeend",
+        `<link rel="icon" href="${url}">`
+      );
+      break;
+    }
+  }
+})();
+
+
 
 // 2. Cargar sidebar.html
 fetch(prefix + "assetsInternos/sidebar.html")

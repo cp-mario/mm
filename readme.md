@@ -28,6 +28,8 @@ To reference a resource inside it, use:
 ```
 assets/path/to/resource
 ```
+If you put a file named icon.extension (it can be .svg .png .ico .webp .jpg or .jpeg) Ex: icon.png it will be the icon that the browser will show on the tab else the icon will be the browsers default.
+
 
 ### `pages/` (required)  
 This folder contains all your `.mmx` files.  
