@@ -104,8 +104,9 @@
 }
 
 main.pc:not(.sidebarActiva){
-  margin: 0px;
+  margin-top: 0px;
   margin-inline: 100px;
+  margin-bottom: 100px;
 }
 
 
