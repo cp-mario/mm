@@ -132,7 +132,7 @@ code:not([data-auto]) {
 
 .multiline-code > code{
     overflow-x: auto;
-    padding: 10px;
+    padding: 16px;
     padding-right: 32px !important; /* algo mas de padding a la derecha por el botón de copiar */
     margin: 0px; /* Importante para el que tiene resaltado que sino se ve mal el scroll tiene debajo una linea */
 }
