@@ -226,7 +226,7 @@ document.querySelectorAll('pre.multiline-code .copy-btn').forEach(btn => {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
                 <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
-            <span class="copy-text">Copiado</span>
+            <span class="copy-text">Copied</span>
         `;
         try {
             const pre = btn.closest('pre.multiline-code');

@@ -64,14 +64,27 @@ main img {
 }
 
 .copy-btn {
+    padding: 2px;
     background: transparent;
     border-color: transparent;
     display: flex;
     justify-content: stretch;
-    margin: 2px;
     position: absolute;
     top: 8px;
     right: 8px;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.multiline-code:hover .copy-btn{
+    opacity: 1;
+}
+
+.copy-btn.disabled{
+    opacity: 1;
+    transition: opacity 2s ease-in-out;
+    opacity: 0;
+    
 }
 
 .copy-btn:hover {
@@ -112,9 +125,9 @@ code:not([data-auto]) {
 
 .multiline-code > code{
     overflow-x: auto;
-    padding: 1em;
-    margin: 0px;
-    padding-right: 3em !important ;
+    padding: 10px;
+    padding-right: 32px !important; /* algo mas de padding a la derecha por el botón de copiar */
+    margin: 0px; /* Importante para el que tiene resaltado que sino se ve mal el scroll tiene debajo una linea */
 }
 
 /* pre, bloque codigo multilinea  */
@@ -142,7 +155,7 @@ main a,main a:visited,main a:active {
     text-decoration: none;
 }
 
-/* Enlazes todos hover */
+/* Enlazes hover */
 main a:hover{
     color: #3ca9c9;
     text-decoration: none;
