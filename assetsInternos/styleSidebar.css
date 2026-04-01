@@ -103,6 +103,12 @@
   text-decoration: none;
 }
 
+main.pc:not(.sidebarActiva){
+  margin: 0px;
+  margin-inline: 100px;
+}
+
+
 #icon-btn2{
   position: fixed;
   top: 0;
