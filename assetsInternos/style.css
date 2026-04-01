@@ -114,6 +114,14 @@ code {
     font-family: "JetBrains Mono", monospace;
 }
 
+.iframe{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin-block: 20px;
+}
+
+
 /* bloque codigo multilinea  */
 .multiline-code > code{
     border-radius: 5px;

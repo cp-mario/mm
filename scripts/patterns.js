@@ -51,6 +51,16 @@ monoline: [
     // Hard break
     { regex: /^#b.*$/gm, replace: '%%HARD_BREAK%%' },
 
+
+    {
+      regex: /^\s*#iframe\(\s*¡([\s\S]+?)!\s*\)\s*$/gm,
+      replace: (match, content) => {
+        const html = content.trim();
+        return `<div class="iframe">${html}</div>`;
+      }
+    },
+
+
     // code from txt
     { 
       regex: /^#code\((.+?)\)(?:\s+([\w\s]+))?$/gm, 
@@ -73,6 +83,7 @@ monoline: [
         ? `<pre class="${classes.join(" ")}" path="${path}" auto="true"></pre>`
         : `<pre class="${classes.join(" ")}" path="${path}"></pre>`;
     }
+    
 
     },
   ],

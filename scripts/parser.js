@@ -31,6 +31,13 @@ export function mmxToHtml(mmx) {
   // 6. Restaurar code
   result = restoreRawBlocks(result, extracted.blocks);
 
+  if (globalThis.__MMX_RAW_IFRAMES__) {
+    for (const item of globalThis.__MMX_RAW_IFRAMES__) {
+      result = result.replace(item.key, item.value);
+    }
+  }
+
+
   // 7. Limpieza final
   return result.replace(/(<\/?(?:h[1-6]|div|p|ul|ol|li|blockquote)[^>]*>)\s*<br>\s*/gi, '$1');
 }
@@ -122,7 +129,7 @@ function wrapParagraphs(text) {
   const output = [];
   let paragraph = [];
 
-  const blockRegex = /^<(?:h[1-6]|div|p|ul|ol|li|blockquote|hr|img|pre)/i;
+  const blockRegex = /^<(?:h[1-6]|div|p|ul|ol|li|blockquote|hr|img|pre|iframe)/i;
 
   const flushParagraph = () => {
     if (paragraph.length === 0) return;
