@@ -86,7 +86,7 @@ monoline: [
     },
     {
       name: 'code',
-      open: /^:::code(?:\s+(\w+))?.*$/gm,
+      open: /^:::code(?:\s+([^\n]+))?\s*$/gm,
       close: /^:::\s*$/gm,
       tag: 'pre',
       class: 'multiline-code',

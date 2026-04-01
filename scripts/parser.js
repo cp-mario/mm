@@ -50,10 +50,10 @@ function parseMultilineBlocks(text, config) {
 
       const block = stack.pop();
       let processed;
+      let html;
 
       // En parseMultilineBlocks, cuando procesas bloques raw (code):
-
-    if (block.raw) {
+      if (block.raw) {
         let content = block.content.join('\n');
         content = content.replace(/^\n+/, '').replace(/\n+$/, '')
                         .replace(/&/g, "&amp;")
@@ -61,14 +61,13 @@ function parseMultilineBlocks(text, config) {
                         .replace(/>/g, "&gt;");
 
         let attrs = '';
-        if (block.isAuto) attrs = ' data-auto="true"';
-        
-        processed = `<code${attrs}>${content}</code>`;
-        
-        let preClass = "";
-        
-        const html = `<pre class="${preClass}">${processed}</pre>`;
-    } else {
+        if (block.isAuto) attrs = ' auto="true"';
+
+        const preClasses = (block.classes && block.classes.length) ? block.classes.join(' ') : block.class;
+
+        processed = `<code>${content}</code>`;
+        html = `<pre class="${preClasses}"${attrs}>${processed}</pre>`;
+      } else {
         processed = wrapParagraphs(block.content.join('\n'));
 
         for (const { regex, replace } of PATTERNS.inline) {
@@ -76,9 +75,8 @@ function parseMultilineBlocks(text, config) {
         }
 
         processed = `<span class="note-label">Note:</span>${processed}`;
+        html = `<${block.tag} class="${block.class}">${processed}</${block.tag}>`;
       }
-
-      const html = `<${block.tag} class="${block.class}">${processed}</${block.tag}>`;
 
       if (stack.length > 0) {
         stack[stack.length - 1].content.push(html);
@@ -88,11 +86,12 @@ function parseMultilineBlocks(text, config) {
 
     } else if (config.open.test(line)) {
         config.open.lastIndex = 0;
-
         const match = config.open.exec(line);
-        config.open.lastIndex = 0
-        const lang = match && match[1] ? match[1] : '';
-        const isAuto = lang === 'auto';
+        config.open.lastIndex = 0;
+        const params = match && match[1] ? match[1].trim() : '';
+        const tokens = params ? params.split(/\s+/) : [];
+        const isAuto = tokens.includes('auto');
+        const extraClasses = tokens.filter(t => t !== 'auto');
 
         stack.push({
           type: config.name,
@@ -100,8 +99,9 @@ function parseMultilineBlocks(text, config) {
           tag: config.tag,
           class: config.class,
           raw: config.raw || false,
-          lang,       // guardamos el lenguaje
-          isAuto      // guardamos si es auto
+          flags: tokens,    // tokens found after :::code
+          isAuto,
+          classes: [config.class, ...extraClasses]
         });
       } else if (stack.length > 0) {
         stack[stack.length - 1].content.push(line);
@@ -174,6 +174,13 @@ function extractRawBlocks(html) {
   let i = 0;
 
   html = html.replace(/<pre class="multiline-code">[\s\S]*?<\/pre>/g, (match) => {
+    const key = `%%RAW_${i++}%%`;
+    blocks.push({ key, value: match });
+    return key;
+  });
+
+  // Match <pre> tags where "multiline-code" is one of several classes
+  html = html.replace(/<pre[^>]*class="[^"]*\bmultiline-code\b[^"]*"[^>]*>[\s\S]*?<\/pre>/g, (match) => {
     const key = `%%RAW_${i++}%%`;
     blocks.push({ key, value: match });
     return key;

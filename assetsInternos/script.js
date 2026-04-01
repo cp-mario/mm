@@ -307,7 +307,7 @@ function putCopyButton(btn){
 
 
 
-const codes = document.querySelectorAll('code[data-auto="true"]');
+const codes = document.querySelectorAll('pre[auto="true"] > code');
 codes.forEach(el => {
     hljs.highlightElement(el);
 });

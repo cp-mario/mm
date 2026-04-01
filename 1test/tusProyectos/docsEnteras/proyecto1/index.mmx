@@ -102,14 +102,14 @@ and with no highlighting
 
 #code(assets/codefromtext.txt)
 
-You can use also the flags auto noMonoSpace noCopy noCodeBg noFormatted (if noCodeBg is enable also wont be a copy btn and if noCodeBg is enabled no formatted too and with noCodeBg auto will not work)
+You can use also the flags in normal and external code: auto noMonoSpace noCopy noCodeBg noFormatted (if noCodeBg is enable also wont be a copy btn and if noCodeBg is enabled no formatted too and with noCodeBg auto will not work)
 
 ***All the tags:***
 
 #b
 #b
 **ninguna**
-#code(https://raw.githubusercontent.com/cp-mario/MMX/refs/heads/main/LICENSE)
+#code(https://raw.githubusercontent.com/cp-mario/MMX/refs/heads/main/LICENSE) algo
 
 #b
 #b
