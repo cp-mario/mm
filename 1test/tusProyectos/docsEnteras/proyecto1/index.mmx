@@ -53,7 +53,7 @@ And also a link to a heading in another page pages/path/to/the/page/from/pages#h
 some inline `codeffffffff df df dsf fd d it can be in diferent lines` or 
 
 A video from a URL
-!!(https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4)
+!!(https://cdn.jsdelivr.net/npm/big-buck-bunny-1080p@0.0.6/video.mp4)
 
 
 audio from assets/
