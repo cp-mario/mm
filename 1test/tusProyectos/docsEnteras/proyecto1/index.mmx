@@ -70,5 +70,128 @@ function test() {
 :::code
 function test() {
     return "Without highlighting if youd dont put auto";
+    This is a long line to test the scroll -----------------------------------------------.
 }
 :::
+
+
+#b
+#b
+#b
+#b
+#b
+#b
+
+
+And code from a external link with auto highlighting
+
+#code(https://raw.githubusercontent.com/cp-mario/MMX/refs/heads/main/LICENSE) auto
+
+and with no highlighting
+
+#code(https://raw.githubusercontent.com/cp-mario/MMX/refs/heads/main/LICENSE)
+
+--------------
+
+
+And code from a file from assets with auto highlighting
+
+#code(assets/codefromtext.txt) auto
+
+and with no highlighting
+
+#code(assets/codefromtext.txt)
+
+You can use also the flags auto noMonoSpace noCopy noCodeBg noFormatted (if noCodeBg is enable also wont be a copy btn and if noCodeBg is enabled no formatted too and with noCodeBg auto will not work)
+
+***All the tags:***
+
+#b
+#b
+**ninguna**
+#code(https://raw.githubusercontent.com/cp-mario/MMX/refs/heads/main/LICENSE)
+
+#b
+#b
+**noMonoSpace**
+#code(https://raw.githubusercontent.com/cp-mario/MMX/refs/heads/main/LICENSE) noMonoSpace
+
+#b
+#b
+**noCopy**
+#code(https://raw.githubusercontent.com/cp-mario/MMX/refs/heads/main/LICENSE) noCopy
+
+#b
+#b
+**noFormatted**
+#code(https://raw.githubusercontent.com/cp-mario/MMX/refs/heads/main/LICENSE) noFormatted
+
+#b
+#b
+**auto**
+#code(https://raw.githubusercontent.com/cp-mario/MMX/refs/heads/main/LICENSE) auto
+
+#b
+#b
+**noMonoSpace noCopy**
+#code(https://raw.githubusercontent.com/cp-mario/MMX/refs/heads/main/LICENSE) noMonoSpace noCopy
+
+#b
+#b
+**noMonoSpace noFormatted**
+#code(https://raw.githubusercontent.com/cp-mario/MMX/refs/heads/main/LICENSE) noMonoSpace noFormatted
+
+#b
+#b
+**noMonoSpace auto**
+#code(https://raw.githubusercontent.com/cp-mario/MMX/refs/heads/main/LICENSE) noMonoSpace auto
+
+#b
+#b
+**noCopy noFormatted**
+#code(https://raw.githubusercontent.com/cp-mario/MMX/refs/heads/main/LICENSE) noCopy noFormatted
+
+#b
+#b
+**noCopy auto**
+#code(https://raw.githubusercontent.com/cp-mario/MMX/refs/heads/main/LICENSE) noCopy auto
+
+#b
+#b
+**noFormatted auto**
+#code(https://raw.githubusercontent.com/cp-mario/MMX/refs/heads/main/LICENSE) noFormatted auto
+
+#b
+#b
+**noMonoSpace noCopy noFormatted**
+#code(https://raw.githubusercontent.com/cp-mario/MMX/refs/heads/main/LICENSE) noMonoSpace noCopy noFormatted
+
+#b
+#b
+**noMonoSpace noCopy auto**
+#code(https://raw.githubusercontent.com/cp-mario/MMX/refs/heads/main/LICENSE) noMonoSpace noCopy auto
+
+#b
+#b
+**noMonoSpace noFormatted auto**
+#code(https://raw.githubusercontent.com/cp-mario/MMX/refs/heads/main/LICENSE) noMonoSpace noFormatted auto
+
+#b
+#b
+**noCopy noFormatted auto**
+#code(https://raw.githubusercontent.com/cp-mario/MMX/refs/heads/main/LICENSE) noCopy noFormatted auto
+
+#b
+#b
+**noMonoSpace noCopy noFormatted auto**
+#code(https://raw.githubusercontent.com/cp-mario/MMX/refs/heads/main/LICENSE) noMonoSpace noCopy noFormatted auto
+
+#b
+#b
+**noCodeBg (incluye noCopy + noFormatted)**
+#code(https://raw.githubusercontent.com/cp-mario/MMX/refs/heads/main/LICENSE) noCodeBg
+
+#b
+#b
+**noMonoSpace noCodeBg (incluye noCopy + noFormatted)**
+#code(https://raw.githubusercontent.com/cp-mario/MMX/refs/heads/main/LICENSE) noMonoSpace noCodeBg

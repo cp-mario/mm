@@ -27,6 +27,8 @@ fetch(prefix + "config.json")
 });
 
 
+//cargar icono
+
 (async () => {
   const exts = ["svg","png","ico","webp","jpg","jpeg"];
   for (const ext of exts) {
@@ -40,6 +42,27 @@ fetch(prefix + "config.json")
     }
   }
 })();
+
+
+
+//cargar codigo desde archivo (externo o interno)
+
+document.querySelectorAll('pre.fileCode').forEach(async pre => {
+    const path = pre.getAttribute("path");
+
+    const contenido = await fetch(path).then(r => r.text());
+
+    const code = document.createElement('code');
+    code.textContent = contenido;
+
+    pre.appendChild(code);
+    if (pre.hasAttribute("auto")){
+      hljs.highlightElement(code)
+    }
+
+    createCopyButton(pre)
+});
+
 
 
 
@@ -228,39 +251,58 @@ function cargarMenuHamburguesa(){
 }
 
 
+document.querySelectorAll('pre.multiline-code').forEach(pre => {
+    if (pre.classList.contains("fileCode")) return;
+    createCopyButton(pre);
+});
 
-document.querySelectorAll('pre.multiline-code .copy-btn').forEach(btn => {
-    btn.addEventListener('click', async () => {
-        // 🔒 1. BLOQUEAR EL BOTÓN INMEDIATAMENTE
-        btn.classList.add('copied', 'disabled');
-        
-        // Guardar el contenido original para restaurarlo después
-        const originalHTML = btn.innerHTML;
-        // 2. Cambiar el contenido al estado "Copiado"
-        btn.innerHTML = `
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                <polyline points="20 6 9 17 4 12"></polyline>
-            </svg>
-            <span class="copy-text">Copied</span>
-        `;
-        try {
-            const pre = btn.closest('pre.multiline-code');
-            const code = pre.querySelector('code');
-            if (!code) throw new Error('No code found');
-            await navigator.clipboard.writeText(code.innerText);
-            // 3. DESBLOQUEAR DESPUÉS DE 2 SEGUNDOS
-            setTimeout(() => {
-                btn.classList.remove('copied', 'disabled');
-                btn.innerHTML = originalHTML;
-            }, 1000);
-        } catch (err) {
-            console.error('Error al copiar:', err);
-            // En caso de error, desbloquear inmediatamente para reintentar
+
+
+function createCopyButton(father){
+    father.insertAdjacentHTML("beforeend", `
+          <button class="copy-btn" title="Copy">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+          </button>
+    `);
+
+    putCopyButton(father.querySelector(".copy-btn"));
+}
+
+function putCopyButton(btn){
+  btn.addEventListener('click', async () => {
+    btn.classList.add('copied', 'disabled');
+    
+    const originalHTML = btn.innerHTML;
+
+    btn.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        <span class="copy-text">Copied</span>
+    `;
+
+    try {
+        const pre = btn.closest('pre.multiline-code');
+        const code = pre.querySelector('code');
+        if (!code) throw new Error('No code found');
+
+        await navigator.clipboard.writeText(code.innerText);
+
+        setTimeout(() => {
             btn.classList.remove('copied', 'disabled');
             btn.innerHTML = originalHTML;
-        }
-    });
-});
+        }, 1000);
+
+    } catch (err) {
+        console.error('Error al copiar:', err);
+        btn.classList.remove('copied', 'disabled');
+        btn.innerHTML = originalHTML;
+    }
+  });
+}
 
 
 

@@ -240,8 +240,12 @@ function applyPathPrefix(html, prefix) {
     // HREF (atributo suelto, no solo en <a>)
     // ========================================
     .replace(/(href=["'])(pages\/[^"']+)/g, `$1${prefix}$2`)
-    .replace(/(href=["'])(assets\/[^"']+)/g, `$1${prefix}$2`);
+    .replace(/(href=["'])(assets\/[^"']+)/g, `$1${prefix}$2`)
+
+    //Path en code de un archivo o web
+    .replace(/(path=["'])(assets\/[^"']+)/g, `$1${prefix}$2`)
 }
+
 
 function convertMmxFile(inputPath, outputPath, outputRoot) {
   const content = fs.readFileSync(inputPath, "utf8");

@@ -169,6 +169,40 @@ main a:hover{
 }
 
 
+pre.multiline-code.noMonoSpace code{
+    font-family: "Lato", sans-serif;
+}
+
+pre.multiline-code.noFormatted code{
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+pre.multiline-code.noCodeBg code{
+    padding: 0px !important;
+    color: black;
+    border-radius: 0px;
+    font-size: 16px;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+pre.multiline-code.noCodeBg{
+    background-color: transparent;
+    margin: 0px;
+}
+
+pre.multiline-code.noCodeBg .copy-btn{
+    display: none;
+}
+
+pre.multiline-code.noCopy .copy-btn{
+    display: none;
+}
+
+/* Medium zoom */
 
 .medium-zoom-overlay, .medium-zoom-image--opened{
     z-index: 1000;

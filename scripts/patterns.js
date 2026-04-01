@@ -50,6 +50,31 @@ monoline: [
 
     // Hard break
     { regex: /^#b.*$/gm, replace: '%%HARD_BREAK%%' },
+
+    // code from txt
+    { 
+      regex: /^#code\((.+?)\)(?:\s+([\w\s]+))?$/gm, 
+      replace: (match, path, flags) => {
+
+      // Convertir flags en array
+      const opts = flags ? flags.trim().split(/\s+/) : [];
+
+      // Detectar auto (único que NO es clase)
+      const auto = opts.includes("auto");
+
+      // Clases extra (todas excepto auto)
+      const extraClasses = opts.filter(f => f !== "auto");
+
+      // Clases base
+      let classes = ["fileCode", "multiline-code", ...extraClasses];
+
+      // Siempre <pre>, nunca <p>
+      return auto
+        ? `<pre class="${classes.join(" ")}" path="${path}" auto="true"></pre>`
+        : `<pre class="${classes.join(" ")}" path="${path}"></pre>`;
+    }
+
+    },
   ],
   multiline: [
     {
