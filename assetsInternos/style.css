@@ -4,8 +4,21 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
 
 
+hr {
+    border: 0;
+    border-top: 1px solid #a7a7a7;
+    margin: 20px;
+    margin-inline: 10px;
+    padding: 0;
+    height: 0;
+}
+
+
+
 :root {
   --plyr-color-main: #9bb2d7;
+  text-align: left;
+  font-size: 17px !important;
 }
 
 
@@ -191,7 +204,6 @@ pre.multiline-code.noCodeBg code{
     padding: 0px !important;
     color: black;
     border-radius: 0px;
-    font-size: 16px;
     white-space: pre-wrap;
     overflow-wrap: break-word;
     word-break: break-word;

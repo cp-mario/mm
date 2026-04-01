@@ -51,6 +51,9 @@ monoline: [
     // Hard break
     { regex: /^#b.*$/gm, replace: '%%HARD_BREAK%%' },
 
+    //Separator (#s)
+    { regex: /^#s.*$/gm, replace: '<hr>' },
+
 
     {
       regex: /^\s*#iframe\(\s*¡([\s\S]+?)!\s*\)\s*$/gm,
@@ -59,6 +62,8 @@ monoline: [
         return `<div class="iframe">${html}</div>`;
       }
     },
+
+    
 
 
     // code from txt
