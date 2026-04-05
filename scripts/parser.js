@@ -75,14 +75,75 @@ function parseMultilineBlocks(text, config) {
         processed = `<code>${content}</code>`;
         html = `<pre class="${preClasses}"${attrs}>${processed}</pre>`;
       } else {
-        processed = wrapParagraphs(block.content.join('\n'));
+          // Special handling for table-like blocks
+          if (block.type === 'vtable' || block.type === 'htable' || block.type === 'table') {
+            const rows = block.content
+              .map(r => r.trim())
+              .filter(r => r !== '')
+              .map(r => {
+                // allow optional leading/trailing | and split by |
+                let row = r;
+                if (row.startsWith('|')) row = row.slice(1);
+                if (row.endsWith('|')) row = row.slice(0, -1);
+                return row.split('|').map(c => c.trim());
+              })
+              .filter(r => r.length > 0);
 
-        for (const { regex, replace } of PATTERNS.inline) {
-          processed = processed.replace(regex, replace);
-        }
+            const processCell = (text) => {
+              let content = text.replace(/^\n+/, '').replace(/\n+$/, '');
+              // preserve line breaks inside cells as <br>
+              content = content.split('\n').map(l => l).join('<br>');
+              for (const { regex, replace } of PATTERNS.inline) {
+                content = content.replace(regex, replace);
+              }
+              return content;
+            };
 
-        processed = `<span class="note-label">Note:</span>${processed}`;
-        html = `<${block.tag} class="${block.class}">${processed}</${block.tag}>`;
+            const classAttr = (block.classes && block.classes.length) ? ` class="${block.classes.join(' ').trim()}"` : '';
+
+            if (block.type === 'vtable') {
+              const trs = rows.map(cells => {
+                const th = `<th>${processCell(cells[0] || '')}</th>`;
+                const tds = cells.slice(1).map(c => `<td>${processCell(c)}</td>`).join('');
+                return `<tr>${th}${tds}</tr>`;
+              }).join('\n');
+              html = `<table${classAttr}><tbody>${trs}</tbody></table>`;
+
+            } else if (block.type === 'htable') {
+              const header = rows[0] || [];
+              const thead = `<thead><tr>${header.map(h => `<th>${processCell(h)}</th>`).join('')}</tr></thead>`;
+              const bodyRows = rows.slice(1).map(cells => `<tr>${cells.map(c => `<td>${processCell(c)}</td>`).join('')}</tr>`).join('\n');
+              html = `<table${classAttr}>${thead}<tbody>${bodyRows}</tbody></table>`;
+
+            } else { // table with header top and footer bottom
+              if (rows.length === 0) {
+                html = `<table${classAttr}></table>`;
+              } else if (rows.length === 1) {
+                const thead = `<thead><tr>${rows[0].map(h => `<th>${processCell(h)}</th>`).join('')}</tr></thead>`;
+                html = `<table${classAttr}>${thead}</table>`;
+              } else {
+                const thead = `<thead><tr>${rows[0].map(h => `<th>${processCell(h)}</th>`).join('')}</tr></thead>`;
+                const tfoot = `<tfoot><tr>${rows[rows.length - 1].map(h => `<th>${processCell(h)}</th>`).join('')}</tr></tfoot>`;
+                const body = rows.slice(1, -1).map(cells => `<tr>${cells.map(c => `<td>${processCell(c)}</td>`).join('')}</tr>`).join('\n');
+                html = `<table${classAttr}>${thead}<tbody>${body}</tbody>${tfoot}</table>`;
+              }
+            }
+
+          } else {
+            processed = wrapParagraphs(block.content.join('\n'));
+
+            for (const { regex, replace } of PATTERNS.inline) {
+              processed = processed.replace(regex, replace);
+            }
+
+            // Only add the note label for note blocks
+            if (block.type === 'note') {
+              processed = `<span class="note-label">Note:</span>${processed}`;
+              html = `<${block.tag} class="${block.classes ? block.classes.join(' ') : block.class}">${processed}</${block.tag}>`;
+            } else {
+              html = `<${block.tag} class="${block.classes ? block.classes.join(' ') : block.class}">${processed}</${block.tag}>`;
+            }
+          }
       }
 
       if (stack.length > 0) {
@@ -129,7 +190,7 @@ function wrapParagraphs(text) {
   const output = [];
   let paragraph = [];
 
-  const blockRegex = /^<(?:h[1-6]|div|p|ul|ol|li|blockquote|hr|img|pre|iframe)/i;
+  const blockRegex = /^<(?:h[1-6]|div|p|ul|ol|li|blockquote|hr|img|pre|iframe|table|thead|tbody|tfoot|tr|th|td)/i;
 
   const flushParagraph = () => {
     if (paragraph.length === 0) return;

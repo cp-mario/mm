@@ -8,6 +8,9 @@ This title do have id
 This is a note
 :::
 
+Text <c="red">In red</c> or <c="#0000FF">**In blue and bold**</c>
+
+
 You can add blank lines
 #b
 #b
@@ -46,6 +49,12 @@ Donec diam elit, consequat at mauris ut, sagittis sodales augue. Donec ex neque,
 Proin auctor vel purus vitae vulputate. Donec viverra metus vel diam euismod ullamcorper. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Integer hendrerit ante a finibus varius. Nullam elementum quam vel mauris dictum, eu pretium nisi fringilla. Donec orci est, aliquam a fringilla nec, sollicitudin eget neque. Donec mattis elit turpis, in facilisis diam pulvinar sed. In nec nisi condimentum sem tristique feugiat quis iaculis enim. Aenean tempor ut libero nec venenatis. Vestibulum nec nisl et eros euismod venenatis. Donec eu placerat nibh. Quisque efficitur nisi sed dui feugiat auctor. Nulla vulputate vestibulum dignissim. Nunc id risus elementum, sollicitudin magna eu, laoreet dui. Vivamus at augue lectus.
 
 Quisque tristique libero et mollis cursus. Aenean odio ligula, mollis eu pulvinar vel, lobortis at purus. Mauris eu ante pretium, porttitor urna non, fringilla nisl. Aliquam sodales sapien erat, eu pulvinar nulla ullamcorper nec. Integer mauris libero, egestas porta aliquam at, porttitor et justo. Donec dolor nunc, tempor at magna sed, bibendum consequat ante. Fusce sed vulputate tortor. Vestibulum aliquet velit sit amet neque iaculis imperdiet. Sed eleifend quis erat id feugiat. Aliquam placerat vestibulum arcu, ac porta quam rutrum malesuada. Suspendisse eu dui sollicitudin, tristique eros sed, fermentum magna. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Etiam vitae commodo velit.
+
+#table
+titulo | otro titulo | otro titulo
+mas texto | mas texto | mas texto
+#endtable
+
 
 
 

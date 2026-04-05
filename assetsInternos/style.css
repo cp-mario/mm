@@ -36,6 +36,10 @@ hr {
     
 }
 
+.coloredText {
+    display: inline;
+}
+
 .note > p{
     margin-block: 2px;
 }

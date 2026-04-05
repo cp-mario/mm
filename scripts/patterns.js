@@ -95,7 +95,7 @@ monoline: [
   multiline: [
     {
       name: 'note',
-      open: /^:::note\s*$/gm,
+      open: /^:::note(?:\s+([^\n]+))?\s*$/gm,
       close: /^:::\s*$/gm,
       tag: 'div',
       class: 'note',
@@ -107,15 +107,85 @@ monoline: [
       tag: 'pre',
       class: 'multiline-code',
       raw: true
+    },
+    {
+      name: 'vtable',
+      open: /^#vtable(?:\s+([^\n]+))?\s*$/gm,
+      close: /^#endvtable\s*$/gm,
+      tag: 'table',
+      class: 'vtable',
+      raw: false
+    },
+    {
+      name: 'htable',
+      open: /^#htable(?:\s+([^\n]+))?\s*$/gm,
+      close: /^#endhtable\s*$/gm,
+      tag: 'table',
+      class: 'htable',
+      raw: false
+    },
+    {
+      name: 'table',
+      open: /^#table(?:\s+([^\n]+))?\s*$/gm,
+      close: /^#endtable\s*$/gm,
+      tag: 'table',
+      class: 'table',
+      raw: false
     }
   ],
   inline: [
-    { regex: /!!!\(([^)]+)\)/g, replace: '<div class="audio"><audio src="$1" controls></audio></div>' },
-    { regex: /!!\(([^)]+)\)/g, replace: '<video src="$1" controls></video>' },
-    { regex: /!\[([^\]]*)\]\(([^)]+)\)/g, replace: '<img alt="$1" src="$2">' },
-    { regex: /\[([^\]]+)\]\(([^)]+)\)/g, replace: '<a target="_blank" href="$2">$1</a>' },
-    { regex: /\*\*(.*?)\*\*/g, replace: '<strong>$1</strong>' },
-    { regex: /\*(.*?)\*/g, replace: '<em>$1</em>' },
-    { regex: /`([^`]+)`/g, replace: '<code class="inline-code">$1</code>' }
+    { 
+      regex: /!!!\(([^)]+)\)(?:\s+([\w\-\s]+))?/g, 
+      replace: (match, src, classes) => {
+        const cls = classes ? ` ${classes.trim().split(/\s+/).join(' ')}` : '';
+        return `<div class="audio${cls}"><audio src="${src}" controls></audio></div>`;
+      }
+    },
+    { 
+      regex: /!!\(([^)]+)\)(?:\s+([\w\-\s]+))?/g, 
+      replace: (match, src, classes) => {
+        const clsAttr = classes ? ` class="${classes.trim().split(/\s+/).join(' ')}"` : '';
+        return `<video src="${src}" controls${clsAttr}></video>`;
+      }
+    },
+    {
+      regex: /!\[([^\]]*)\]\(([^)]+)\)(?:\s+([\w\-\s]+))?/g,
+      replace: (match, alt, src, classes) => {
+        const cls = classes ? ` class="${classes.trim().split(/\s+/).join(' ')}"` : '';
+        return `<img alt="${alt}" src="${src}"${cls}>`;
+      }
+    },
+    {
+      regex: /\[([^\]]+)\]\(([^)]+)\)(?:\s+([\w\-\s]+))?/g,
+      replace: (match, text, href, classes) => {
+        const cls = classes ? ` class="${classes.trim().split(/\s+/).join(' ')}"` : '';
+        return `<a target="_blank" href="${href}"${cls}>${text}</a>`;
+      }
+    },
+    // **bold**
+    {
+      regex: /\*\*(.*?)\*\*/g,
+      replace: (match, text) => `<strong>${text}</strong>`
+    },
+
+    // *italic*
+    {
+      regex: /\*(.*?)\*/g,
+      replace: (match, text) => `<em>${text}</em>`
+    },
+    { 
+      regex: /<c="([^"]+)">(.*?)<\/c>/gs,
+      replace: (match, classes, content) => {
+        const cls = classes.trim().split(/\s+/).join(' ');
+        return `<div class="coloredText" style="color: ${cls};">${content}</div>`;
+      }
+    },
+    { 
+      regex: /`([^`]+)`(?:\s+([\w\-\s]+))?/g, 
+      replace: (match, code, classes) => {
+        const cls = classes ? ` ${classes.trim().split(/\s+/).join(' ')}` : '';
+        return `<code class="inline-code${cls}">${code}</code>`;
+      }
+    }
   ]
 };
