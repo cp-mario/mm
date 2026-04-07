@@ -43,7 +43,7 @@
 
 #sidebar-menu::-webkit-scrollbar-thumb {
   background: rgba(0,0,0,0.35);
-  border-radius: 6px;
+  border-radius: 5px;
 }
 
 #sidebar-menu::-webkit-scrollbar-thumb:hover {

@@ -4,6 +4,16 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
 
 
+
+
+/* Paletas de colores */
+:root {
+    /* TODO implementar esto en el codigo */
+    --border-color: #a7a7a7;
+    --border-radius-base: 5px;
+}
+
+
 hr {
     border: 0;
     border-top: 1px solid #a7a7a7;
@@ -29,7 +39,7 @@ hr {
     margin-top: 10px;
     margin-bottom: 10px;
     background-color: #fafa8c;
-    border-radius: 5px;
+    border-radius: var(--border-radius-base);
     padding: 5px;
     padding-left: 10px;
     padding-right: 10px;
@@ -84,12 +94,12 @@ main .img {
     width: 100%;
     height: auto;
     margin-block: 20px;
+    border-radius: var(--border-radius-base);
 }
 
 
 main .inlineImg {
-    height: 1.2em;
-    width: 1.2em;
+    size: 1em;
     vertical-align: -5px;
 }
 
@@ -120,7 +130,7 @@ main .inlineImg {
 
 .copy-btn:hover {
     background: rgba(255, 255, 255, 0.25);
-    border-radius: 5px;
+    border-radius: var(--border-radius-base);
 }
 
 html {
@@ -129,7 +139,7 @@ html {
 
 /* codigo inline */
 .inline-code{
-    border-radius: 5px;
+    border-radius: var(--border-radius-base);
     background-color: #c3c3c3;
     padding-inline: 3px;
 }
@@ -149,7 +159,7 @@ code {
 
 /* bloque codigo multilinea  */
 .multiline-code > code{
-    border-radius: 5px;
+    border-radius: var(--border-radius-base);
     color: #C9D1D9;
 }
 
@@ -159,7 +169,7 @@ code:not([data-auto]) {
 }
 
 .plyr {
-    border-radius: 5px;
+    border-radius: var(--border-radius-base);
     margin-block: 16px; /* Margen arriba y abajo del video */
 }
 
@@ -173,7 +183,7 @@ code:not([data-auto]) {
 /* pre, bloque codigo multilinea  */
 .multiline-code{
     background-color: #0D1117;
-    border-radius: 5px;
+    border-radius: var(--border-radius-base);
     display: flex;
     position: relative;
     justify-content: space-between;
@@ -215,7 +225,7 @@ pre.multiline-code.noFormatted code{
 pre.multiline-code.noCodeBg code{
     padding: 0px !important;
     color: black;
-    border-radius: 0px;
+    border-radius: var(--border-radius-base);
     white-space: pre-wrap;
     overflow-wrap: break-word;
     word-break: break-word;
@@ -247,3 +257,46 @@ pre.multiline-code.noCopy .copy-btn{
 
 
 /* Tables */
+main table {
+    height: 100%;
+    border-collapse: collapse;
+    width: 100%;
+    border-radius: var(--border-radius-base);
+}
+
+/* Vertical header cells (first column) */
+th.vertical-title {
+    width: max-content;
+    padding: 10px 5px;
+    border: 1px solid #a7a7a7;
+    background-color: #d2e0ec;
+    font-weight: bold;
+}
+
+/* Horizontal header cells (first row) */
+th.horizontal-title {
+    height: 100%;
+    padding: 10px 5px;
+    border: 1px solid #a7a7a7;
+    background-color: #d2e0ec;
+    font-weight: bold;
+}
+
+/* Corner cell for tables with both vertical and horizontal headers */
+th.b-blank {
+    height: 100%;
+    padding: 10px;
+    border: none;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Normal table cells */
+td.normal-t-item {
+    height: 100%;
+    padding: 10px 5px;
+    border: 1px solid var(--border-color);
+    text-align: left;
+}

@@ -58,14 +58,14 @@ Bob|87|Pass
 #endtable
 
 # Tabla modo horizontal
-#table h bordered
+#table h
 Nombre|Puntaje|Estado
 Alice|95|Pass
 Bob|87|Pass
 #endtable
 
 # Tabla modo ambos (b) - con esquina vacía
-#table b striped
+#table b
           Nombre|Puntaje
 Rendimiento ayer|Alice|95
 Rendimiento hoy |Bob|87
