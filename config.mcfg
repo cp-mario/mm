@@ -1,20 +1,21 @@
 #This is the config of the parser
+#Three generation modes available:
 
-#If it's true the parser will only generate a file without sidebar (not implemented yet)
+#Set to false for multi-page mode (default)
+#Set to true for single document or single file mode
 singleFile = false
 
-#Paths for not single files
-
-#FOlder with all the required
+#MULTI-PAGE MODE (singleFile=false):
+#Generates a complete project with sidebar navigation and separate pages
 inputPath = "./1test/tusProyectos/docsEnteras/proyecto1"
-
-
 outputPath = "./1test/output/docsEnteras/proyecto1"
 
-#Paths for single files
+#SINGLE DOCUMENT MODE (singleFile=true):
+#Combines ALL .mmx files from inputPath into ONE HTML file without sidebar
+#When singleFile=true, outputPath becomes the OUTPUT FILE PATH (not a folder)
+#Example: outputPath = "./1test/output/proyecto1-single.html"
 
-#mmx file
+#SINGLE FILE MODE (singleFile=true + singleInputPath):
+#Converts a SINGLE .mmx file to HTML
 singleInputPath = "./1test/tusProyectos/archivosUnicos/pruebaUnica.mmx"
-
-#Output html file
 singleOutputPath = "./1test/output/archivosUnicos/pruebaUnica.html"

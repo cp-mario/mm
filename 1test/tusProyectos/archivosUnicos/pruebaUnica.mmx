@@ -1,53 +1,50 @@
-# MMX (:
-This title dont have id and because is the # title, its the title of the page too
+# Single File Mode Test
+Complete test of all MMX patterns in one document
 
-## Title 2 %{2}%
-This title do have id
+## Introduction %{intro}%
+This is a test document for single file mode. It demonstrates various MMX syntax features.
 
 :::note
-This is a note
+This is a test note block with important information
 :::
 
-You can add blank lines
-#b
-#b
-#b
-#b
-#b
-#b
-#b
-#b
-#b
-#b
-#b
-#b
-#b
-#b
-#b
-#b
-#b
-#b
-#b
-#b
-#b
-#b
-#b
-#b
-#b
-#b
+## Text Formatting
+You can use **bold text**, *italic text*, or ***both bold and italic***.
 
-Also you can use **bold**, *italic* or ***both***
+You can also use colored text like <c="red">red text</c> or <c="#0000FF">**blue and bold**</c>.
 
-![Image](https://placehold.net/main.svg)
-You can use images from a URL
-![Image](assets/foto.png)
-or from the assets folder
-![A alternative if the image dont load](assets/fotoquenoexiste.png)
-Also you can put a URL
-[Example](https://example.com)
-And you can go to a heading in your document like a URL but with #id instead of the URL
-[H2](#2)
-You can link to another page on your document like the heading but with pages/path/to/the/page/from/pages (remember the .html)
+### Code Examples
+Here's inline code: `const x = 42;`
+
+### Headings
+This demonstrates h3. You can also use:
+#### H4 Level
+##### H5 Level
+###### H6 Level
+
+## Separator and Hard Break
+Here's some text.
+#br
+And text after a hard break.
+
+---
+
+Text after separator line.
+
+## Links and Navigation
+[Visit Example](https://example.com)
+
+[Back to intro](#intro)
+
+## Patterns Test
+We can use custom patterns like colored inline text and links.
+
+Text with <c="#FF6600">orange color</c> mixed in the paragraph.
+
+---
+
+## End of Single File Test
+This completes the single file mode test document.
 [Introduction](pages/Introduction MMX.html)
 
 some inline `codeffffffff df df dsf fd d it can be in diferent lines` or 
