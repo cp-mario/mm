@@ -136,68 +136,96 @@ function parseMultilineBlocks(text, config) {
       } else {
         // FORMATTED BLOCKS: Tables or notes (not raw code)
         
-        // Special handling for table blocks (vtable, htable, table)
-        if (block.type === 'vtable' || block.type === 'htable' || block.type === 'table') {
-          // Parse table rows separated by line breaks
-          const rows = block.content
-            .map(r => r.trim())
-            .filter(r => r !== '') // Remove empty rows
-            .map(r => {
-              // Parse cells separated by | (pipe character)
-              let row = r;
-              if (row.startsWith('|')) row = row.slice(1); // Remove leading |
-              if (row.endsWith('|')) row = row.slice(0, -1); // Remove trailing |
-              return row.split('|').map(c => c.trim()); // Split and trim each cell
-            })
-            .filter(r => r.length > 0); // Remove processed empty rows
+        // Special handling for table blocks (table only)
+        if (block.type === 'table') {
+            // Get table mode (v, h, b) - default is 'v'
+            const mode = block.tableMode || 'v';
 
-          // Helper function to process cell content (handle inline formatting and HTML)
-          const processCell = (text) => {
-            let content = text.replace(/^\n+/, '').replace(/\n+$/, '');
-            // Preserve line breaks inside cells as <br>
-            content = content.split('\n').map(l => l).join('<br>');
-            // Apply inline formatting within cells
-            for (const { regex, replace } of PATTERNS.inline) {
-              content = content.replace(regex, replace);
-            }
-            return content;
-          };
+            // Helper function to process cell content (handle inline formatting and HTML)
+            const processCell = (text) => {
+              let content = text.replace(/^\n+/, '').replace(/\n+$/, '');
+              // Preserve line breaks inside cells as <br>
+              content = content.split('\n').map(l => l).join('<br>');
+              // Apply inline formatting within cells
+              for (const { regex, replace } of PATTERNS.inline) {
+                content = content.replace(regex, replace);
+              }
+              // If content is empty, show a non-breaking space for visibility
+              return content || '&nbsp;';
+            };
 
-          // Build class attribute if classes are specified
-          const classAttr = (block.classes && block.classes.length) ? ` class="${block.classes.join(' ').trim()}"` : '';
+            // Build class attribute if classes are specified
+            const classAttr = (block.classes && block.classes.length) ? ` class="${block.classes.join(' ').trim()}"` : '';
 
-          // VERTICAL TABLE: First column is headers, rest are data rows
-          if (block.type === 'vtable') {
-            const trs = rows.map(cells => {
-              const th = `<th>${processCell(cells[0] || '')}</th>`;
-              const tds = cells.slice(1).map(c => `<td>${processCell(c)}</td>`).join('');
-              return `<tr>${th}${tds}</tr>`;
-            }).join('\n');
-            html = `<table${classAttr}><tbody>${trs}</tbody></table>`;
+            // Parse table rows separated by line breaks
+            const rows = block.content
+              .map(r => r.trim())
+              .filter(r => r !== '') // Remove empty rows
+              .map(r => {
+                // Parse cells separated by | (pipe character)
+                // For mode 'b', if row doesn't start with | but has leading spaces, treat as empty first cell
+                let row = r;
+                if (mode === 'b' && !row.startsWith('|') && row.match(/^\s+/)) {
+                  // Remove leading spaces and add empty cell at start
+                  row = '|' + row.replace(/^\s+/, '');
+                }
+                return row.split('|').map(c => c.trim()); // Split and trim each cell
+              })
+              .filter(r => r.length > 0); // Remove processed empty rows
 
-          // HORIZONTAL TABLE: First row is header, rest are data rows
-          } else if (block.type === 'htable') {
-            const header = rows[0] || [];
-            const thead = `<thead><tr>${header.map(h => `<th>${processCell(h)}</th>`).join('')}</tr></thead>`;
-            const bodyRows = rows.slice(1).map(cells => `<tr>${cells.map(c => `<td>${processCell(c)}</td>`).join('')}</tr>`).join('\n');
-            html = `<table${classAttr}>${thead}<tbody>${bodyRows}</tbody></table>`;
-
-          // STANDARD TABLE: First row is header, last row is footer, middle rows are body
-          } else { 
             if (rows.length === 0) {
               html = `<table${classAttr}></table>`;
-            } else if (rows.length === 1) {
-              // Single row → just header
-              const thead = `<thead><tr>${rows[0].map(h => `<th>${processCell(h)}</th>`).join('')}</tr></thead>`;
-              html = `<table${classAttr}>${thead}</table>`;
             } else {
-              // Multiple rows → header, body, footer structure
-              const thead = `<thead><tr>${rows[0].map(h => `<th>${processCell(h)}</th>`).join('')}</tr></thead>`;
-              const tfoot = `<tfoot><tr>${rows[rows.length - 1].map(h => `<th>${processCell(h)}</th>`).join('')}</tr></tfoot>`;
-              const body = rows.slice(1, -1).map(cells => `<tr>${cells.map(c => `<td>${processCell(c)}</td>`).join('')}</tr>`).join('\n');
-              html = `<table${classAttr}>${thead}<tbody>${body}</tbody>${tfoot}</table>`;
+              let theadRows = '';
+              let tbodyRows = '';
+              let firstRowIsHeader = (mode === 'h' || mode === 'b');
+
+              // Process all rows
+              rows.forEach((rowCells, rowIndex) => {
+                const isFirstRow = rowIndex === 0;
+                const isHeaderRow = firstRowIsHeader && isFirstRow;
+                const isVerticalHeader = (mode === 'v' || mode === 'b');
+
+                // Build row cells
+                const cellsHtml = rowCells.map((cell, colIndex) => {
+                  const processedCell = processCell(cell);
+                  const isFirstCol = colIndex === 0;
+                  const isVerticalHeaderCell = isVerticalHeader && isFirstCol && !isHeaderRow;
+
+                  // Determine if this cell should be <th> or <td>
+                  if (isHeaderRow) {
+                    // First row headers: all cells are horizontal-title
+                    return `<th class="horizontal-title">${processedCell}</th>`;
+                  } else if (isVerticalHeaderCell) {
+                    // Vertical headers (first column, but not first row)
+                    return `<th class="vertical-title">${processedCell}</th>`;
+                  } else {
+                    return `<td class="normal-t-item">${processedCell}</td>`;
+                  }
+                }).join('');
+
+                let finalCellsHtml = cellsHtml;
+                if (mode === 'b' && isHeaderRow) {
+                  finalCellsHtml = '<th class="b-blank">&nbsp;</th>' + cellsHtml;
+                }
+
+                // Wrap row in <tr> and add to appropriate section
+                const rowHtml = `<tr>${finalCellsHtml}</tr>`;
+                if (isHeaderRow) {
+                  theadRows += rowHtml + '\n';
+                } else {
+                  tbodyRows += rowHtml + '\n';
+                }
+              });
+
+              // Build final table HTML
+              let tableHtml = `<table${classAttr}>`;
+              if (theadRows) {
+                tableHtml += `<thead>\n${theadRows}</thead>\n`;
+              }
+              tableHtml += `<tbody>\n${tbodyRows}</tbody></table>`;
+              html = tableHtml;
             }
-          }
 
         } else {
           // NON-TABLE BLOCKS: Notes, divs, etc.
@@ -234,14 +262,46 @@ function parseMultilineBlocks(text, config) {
       const match = config.open.exec(line); // Get the matched line
       config.open.lastIndex = 0; // Reset again
 
-      // Extract parameters from the opening tag (e.g., :::code python auto)
-      const params = match && match[1] ? match[1].trim() : '';
-      const tokens = params ? params.split(/\s+/) : []; // Split parameters by whitespace
-      
-      // Check for special flags
-      const isAuto = tokens.includes('auto'); // For syntax highlighting
-      const extraClasses = tokens.filter(t => t !== 'auto'); // Other tokens are CSS classes
+      // Extract parameters from the opening tag
+      // match[1] = contenido entre paréntesis (si existe) - para tablas: modo (v/h/b)
+      // match[2] = tokens después del paréntesis (clases, etc.)
+      const parenContent = match && match[1] ? match[1].trim() : '';
+      const extraContent = match && match[2] ? match[2].trim() : '';
 
+      // Para tablas: extraer modo (v/h/b) ya sea de paréntesis o del primer token
+      let tableMode = 'h'; // default: horizontal
+      let tokens = [];
+      let isAuto = false;
+
+      if (config.name === 'table') {
+        // El modo puede estar en parenContent (ej: #table(v)) o como primer token en extraContent (ej: #table v)
+        if (parenContent && ['v', 'h', 'b'].includes(parenContent.toLowerCase())) {
+          tableMode = parenContent.toLowerCase();
+          // Si hay extraContent, sus tokens son clases
+          if (extraContent) {
+            tokens = extraContent.split(/\s+/).filter(t => t);
+          }
+        } else if (extraContent) {
+          // Buscar modo en el primer token de extraContent
+          const allTokens = extraContent.split(/\s+/).filter(t => t);
+          const modeToken = allTokens.find(t => ['v', 'h', 'b'].includes(t.toLowerCase()));
+          if (modeToken) {
+            tableMode = modeToken.toLowerCase();
+            tokens = allTokens.filter(t => t !== modeToken);
+          } else {
+            tokens = allTokens;
+          }
+        }
+        // isAuto no aplica a tablas
+        isAuto = false;
+      } else {
+        // Para otros bloques (code, note, etc.): tokens de extraContent
+        tokens = extraContent ? extraContent.split(/\s+/).filter(t => t) : [];
+        isAuto = tokens.includes('auto');
+      }
+
+      // Filtrar 'auto' de las clases (solo para bloques no-tabla)
+      const extraClasses = tokens.filter(t => t !== 'auto');
       // Push new block onto stack
       stack.push({
         type: config.name, // Block type (code, note, table, etc.)
@@ -251,7 +311,8 @@ function parseMultilineBlocks(text, config) {
         raw: config.raw || false, // Is this a raw/code block?
         flags: tokens, // All tokens found (for debugging)
         isAuto, // Auto syntax highlighting?
-        classes: [config.class, ...extraClasses] // Combined class list
+        classes: [config.class, ...extraClasses], // Combined class list
+        tableMode: config.name === 'table' ? tableMode : undefined // Table mode (v/h/b)
       });
 
     } else if (stack.length > 0) {
@@ -289,8 +350,8 @@ function wrapParagraphs(text) {
   const output = []; // Accumulator for output
   let paragraph = []; // Current paragraph being built
 
-  // Regex to detect block-level HTML elements
-  const blockRegex = /^<(?:h[1-6]|div|p|ul|ol|li|blockquote|hr|img|pre|iframe|table|thead|tbody|tfoot|tr|th|td)/i;
+  // Regex to detect block-level HTML elements (matches opening or closing tags)
+  const blockRegex = /^<\/?(?:h[1-6]|div|p|ul|ol|li|blockquote|hr|img|pre|iframe|table|thead|tbody|tfoot|tr|th|td)/i;
 
   /**
    * Flushes accumulated paragraph lines into a <p> tag

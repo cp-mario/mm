@@ -277,90 +277,72 @@ export const PATTERNS = {
       raw: true  // Important: escape HTML entities to preserve code
     },
 
-    /**
-     * VERTICAL TABLE
-     * Syntax:
-     *   #vtable [optional classes]
-     *   Header 1 | Data 1 | Data 2
-     *   Header 2 | Data 3 | Data 4
-     *   #endvtable
-     * 
-     * Format: First column is headers, remaining columns are data cells
-     * Use pipes (|) to separate columns
-     * 
-     * Example:
-     *   #vtable
-     *   Name | John Smith | Jane Doe
-     *   Age | 30 | 28
-     *   #endvtable
-     */
-    {
-      name: 'vtable',
-      open: /^#vtable(?:\s+([^\n]+))?\s*$/gm,
-      close: /^#endvtable\s*$/gm,
-      tag: 'table',
-      class: 'vtable',
-      raw: false
-    },
-
-    /**
-     * HORIZONTAL TABLE
-     * Syntax:
-     *   #htable [optional classes]
-     *   Header1 | Header2 | Header3
-     *   Row1Col1 | Row1Col2 | Row1Col3
-     *   Row2Col1 | Row2Col2 | Row2Col3
-     *   #endhtable
-     * 
-     * Format: First row is headers, remaining rows are data rows
-     * Use pipes (|) to separate columns
-     * 
-     * Example:
-     *   #htable
-     *   Name | Age | City
-     *   John | 30 | New York
-     *   Jane | 28 | Portland
-     *   #endhtable
-     */
-    {
-      name: 'htable',
-      open: /^#htable(?:\s+([^\n]+))?\s*$/gm,
-      close: /^#endhtable\s*$/gm,
-      tag: 'table',
-      class: 'htable',
-      raw: false
-    },
-
-    /**
+        /**
      * STANDARD TABLE
      * Syntax:
-     *   #table [optional classes]
-     *   Header1 | Header2 | Header3
-     *   Data1 | Data2 | Data3
-     *   Footer1 | Footer2 | Footer3
+    ... existing code ...
+
+     * TABLE BLOCK
+     * Syntax:
+     *   #table [mode] [classes]
      *   #endtable
-     * 
-     * Format: First row = header, last row = footer, middle rows = body data
-     * Use pipes (|) to separate columns
-     * Supports <thead>, <tbody>, <tfoot> HTML structure
-     * 
-     * Example:
+     *
+     * Mode (optional, default: v):
+     *   v - Vertical headers (first column = titles)
+     *   h - Horizontal headers (first row = titles)
+     *   b - Both (first row and first column = titles)
+     *
+     * Classes (optional): CSS classes for styling
+     *
+     * Content format (pipes separate columns):
+     *   title|title2|title3
+     *   title|content
+     *   title|content below
+     *
+     * Note: No prefixes (##+, #+) are used in content. The mode determines header placement.
+     *
+     * Examples:
+     *   #table v striped
+     *   Nombre|Puntaje|Estado
+     *   Alice|95|Pass
+     *   #endtable
+     *
+     *   #table h bordered
+     *   Nombre|Puntaje|Estado
+     *   Alice|95|Pass
+     *   #endtable
+     *
+     *   #table b striped
+     *   |Edad|Nombre|Puntaje
+     *   |30|Alice|95
+     *   #endtable
+     *
+     * Examples:
      *   #table striped
-     *   Name | Score | Status
+     *   ##+ Name | Score | Status
+     *   #+ Age | 30 | Pass
      *   Alice | 95 | Pass
      *   Bob | 87 | Pass
      *   Summary | Results | Complete
      *   #endtable
+     *
+     *   #table(v) bordered
+     *   Name | Score | Status
+     *   Alice | 95 | Pass
+     *   Bob | 87 | Pass
+     *   #endtable
      */
     {
       name: 'table',
-      open: /^#table(?:\s+([^\n]+))?\s*$/gm,
+      open: /^#table(?:\(([^)]+)\))?(?:\s+([^\n]+))?\s*$/gm,
       close: /^#endtable\s*$/gm,
       tag: 'table',
       class: 'table',
       raw: false
-    }
-  ],
+
+      },
+
+      ],
 
   /**
    * INLINE PATTERNS - Character-level formatting

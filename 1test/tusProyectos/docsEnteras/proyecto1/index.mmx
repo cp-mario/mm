@@ -50,13 +50,33 @@ Proin auctor vel purus vitae vulputate. Donec viverra metus vel diam euismod ull
 
 Quisque tristique libero et mollis cursus. Aenean odio ligula, mollis eu pulvinar vel, lobortis at purus. Mauris eu ante pretium, porttitor urna non, fringilla nisl. Aliquam sodales sapien erat, eu pulvinar nulla ullamcorper nec. Integer mauris libero, egestas porta aliquam at, porttitor et justo. Donec dolor nunc, tempor at magna sed, bibendum consequat ante. Fusce sed vulputate tortor. Vestibulum aliquet velit sit amet neque iaculis imperdiet. Sed eleifend quis erat id feugiat. Aliquam placerat vestibulum arcu, ac porta quam rutrum malesuada. Suspendisse eu dui sollicitudin, tristique eros sed, fermentum magna. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Etiam vitae commodo velit.
 
-#table
-titulo | otro titulo | otro titulo
-mas texto | mas texto | mas texto
+# Tabla modo vertical (default)
+#table v striped
+Nombre|Puntaje|Estado
+Alice|95|Pass
+Bob|87|Pass
 #endtable
 
+# Tabla modo horizontal
+#table h bordered
+Nombre|Puntaje|Estado
+Alice|95|Pass
+Bob|87|Pass
+#endtable
 
+# Tabla modo ambos (b) - con esquina vacía
+#table b striped
+          Nombre|Puntaje
+Rendimiento ayer|Alice|95
+Rendimiento hoy |Bob|87
+#endtable
 
+# Tabla sin modo explícito (equivale a v)
+#table
+Título|Descripción
+Item 1|Texto abajo
+Item 2|Más texto
+#endtable
 
 
 
