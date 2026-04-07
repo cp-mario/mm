@@ -1,6 +1,30 @@
-//Este script se cargara en cada html de la documentacion al ejecutarlo
+/**
+ * DOCUMENTATION VIEWER - CLIENT-SIDE SCRIPT
+ * 
+ * This script is loaded in every HTML page of the generated documentation.
+ * It handles:
+ * - Dynamic sidebar menu generation from index.json
+ * - Icon loading (favicon detection and loading)
+ * - Code block enhancements (syntax highlighting, copy buttons)
+ * - Responsive hamburger menu for mobile devices
+ * - Folder expand/collapse with session storage
+ * - Media player initialization (video and audio)
+ * - Image zoom functionality
+ * 
+ * Dependencies:
+ * - highlight.js (hljs) - Syntax highlighting for code blocks
+ * - Plyr.js - Video/audio player
+ * - medium-zoom - Image zoom on click
+ */
 
-//Iconos sidebar
+// ============================================================================
+// SIDEBAR ICONS - SVG elements for folder expand/collapse
+// ============================================================================
+
+/**
+ * Expand icon (plus sign inside a box)
+ * Shows when a folder is collapsed and clickable to expand
+ */
 const iconExpand = `
 <svg width="18" height="18" viewBox="0 0 32 32" fill="none">
   <rect x="2" y="2" width="28" height="28" rx="4" fill="#1E88E5"/>
@@ -9,6 +33,10 @@ const iconExpand = `
   <line x1="10" y1="16" x2="22" y2="16" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
 </svg>`;
 
+/**
+ * Collapse icon (minus sign inside a box)
+ * Shows when a folder is expanded and clickable to collapse
+ */
 const iconCollapse = `
 <svg width="18" height="18" viewBox="0 0 32 32" fill="none">
   <rect x="2" y="2" width="28" height="28" rx="4" fill="#1E88E5"/>
@@ -16,204 +44,283 @@ const iconCollapse = `
   <line x1="10" y1="16" x2="22" y2="16" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
 </svg>`;
 
+/**
+ * Global variable to store the project name
+ * Loaded from config.json and used in the sidebar title
+ */
+let nombreProyecto;
 
-let nombreProyecto
-
-
+// ============================================================================
+// STEP 1: Load project configuration
+// ============================================================================
+/**
+ * Fetch config.json to get project metadata
+ * The config file contains project title, author, and other settings
+ * This allows customization without modifying code
+ */
 fetch(prefix + "config.json")
   .then(res => res.json())
   .then(data => {
-    nombreProyecto = data.project.title
-});
+    nombreProyecto = data.project.title; // Extract project title for sidebar
+  });
 
-
-//cargar icono
-
+// ============================================================================
+// STEP 2: Load favicon - Project icon detection and loading
+// ============================================================================
+/**
+ * Attempts to load a favicon from the assets folder
+ * Tries multiple image formats to maximize compatibility
+ * Formats: svg, png, ico, webp, jpg, jpeg
+ */
 (async () => {
-  const exts = ["svg","png","ico","webp","jpg","jpeg"];
+  const exts = ["svg", "png", "ico", "webp", "jpg", "jpeg"];
+  
+  // Try each extension in order
   for (const ext of exts) {
     const url = prefix + `assets/icon.${ext}`;
+    
+    // Check if the file exists using HEAD request (lightweight, no download)
     if ((await fetch(url, { method: "HEAD" })).ok) {
+      // Insert the favicon link into the document head
       document.head.insertAdjacentHTML(
         "beforeend",
         `<link rel="icon" href="${url}">`
       );
-      break;
+      break; // Stop searching once found
     }
   }
 })();
 
-
-
-//cargar codigo desde archivo (externo o interno)
-
+// ============================================================================
+// STEP 3: Load code from external files (#code directive)
+// ============================================================================
+/**
+ * Processes <pre class="fileCode"> elements that have a "path" attribute
+ * Fetches the file content and injects it into the code block
+ * Optionally applies syntax highlighting with hljs
+ */
 document.querySelectorAll('pre.fileCode').forEach(async pre => {
+    // Get the file path from the path attribute
     const path = pre.getAttribute("path");
 
-    const contenido = await fetch(path).then(r => r.text());
+    try {
+      // Fetch the file content
+      const contenido = await fetch(path).then(r => r.text());
 
-    const code = document.createElement('code');
-    code.textContent = contenido;
+      // Create a code element and set its text content
+      const code = document.createElement('code');
+      code.textContent = contenido; // Text content prevents HTML parsing
 
-    pre.appendChild(code);
-    if (pre.hasAttribute("auto")){
-      hljs.highlightElement(code)
+      // Append the code to the pre element
+      pre.appendChild(code);
+      
+      // If "auto" attribute is set, apply syntax highlighting
+      if (pre.hasAttribute("auto")) {
+        hljs.highlightElement(code); // Highlight with hljs
+      }
+
+      // Add a copy-to-clipboard button
+      createCopyButton(pre);
+    } catch (error) {
+      console.error(`Error loading code from ${path}:`, error);
     }
-
-    createCopyButton(pre)
 });
 
-
-
-
-// 2. Cargar sidebar.html
+// ============================================================================
+// STEP 4: Load sidebar and build dynamic navigation menu
+// ============================================================================
+/**
+ * Loads sidebar.html and initializes the navigation menu
+ * Uses index.json to build a tree structure of all pages
+ * Supports folder expand/collapse with session storage
+ */
 fetch(prefix + "assetsInternos/sidebar.html")
   .then(res => {
-    if (!res.ok) throw new Error("No se pudo cargar sidebar.html");
+    if (!res.ok) throw new Error("Could not load sidebar.html");
     return res.text();
   })
   .then(html => {
+    // Insert the sidebar HTML into the page
     document.body.insertAdjacentHTML('beforeend', html);
-    cargarMenuHamburguesa()
+    
+    // Initialize hamburger menu for mobile
+    cargarMenuHamburguesa();
 
-    // ===============================================================
-    // 3. Cargar index.json autogenerado por el parser
-    // ===============================================================
+    // Load the auto-generated index.json file
+    // Index contains the complete directory/page structure as JSON
     return fetch(prefix + "assetsInternos/index.json");
   })
   .then(res => {
-    if (!res.ok) throw new Error("No se pudo cargar index.json");
+    if (!res.ok) throw new Error("Could not load index.json");
     return res.json();
   })
   .then(indexData => {
-    // ===============================================================
-    // 4. Construir el menú dinámico usando index.json
-    // ===============================================================
+    // Build the dynamic navigation menu from index.json data
     const menu = document.querySelector("#sidebar-menu");
-    if (!menu) return;
+    if (!menu) return; // Exit if no menu element found
 
-    // --- ORDENAR: huérfanos arriba, carpetas después ---
-    const orphans = indexData.filter(n => n.type === "file");
-    const folders = indexData.filter(n => n.type === "folder");
+    /**
+     * ORGANIZE MENU ITEMS
+     * Sort with loose files (pages) first, then folders
+     * Both groups are alphabetically sorted
+     */
+    const orphans = indexData.filter(n => n.type === "file"); // Loose pages
+    const folders = indexData.filter(n => n.type === "folder"); // Folders
 
-    orphans.sort((a, b) => a.name.localeCompare(b.name));
-    folders.sort((a, b) => a.name.localeCompare(b.name));
+    orphans.sort((a, b) => a.name.localeCompare(b.name)); // Sort alphabetically
+    folders.sort((a, b) => a.name.localeCompare(b.name)); // Sort alphabetically
 
-    const ordered = [...orphans, ...folders];
+    const ordered = [...orphans, ...folders]; // Combine: pages first, then folders
 
-    // --- Renderizado original ---
-  
-document.getElementById("sidebar-title").href = prefix;
-document.getElementById("sidebar-title").textContent = nombreProyecto;
+    // Set the sidebar title as a link to the home page
+    document.getElementById("sidebar-title").href = prefix;
+    document.getElementById("sidebar-title").textContent = nombreProyecto;
 
+    /**
+     * Recursively render the menu tree structure
+     * Handles both files (links) and folders (collapsible sections)
+     * 
+     * @param {Object} node - A menu node (file or folder)
+     * @param {Element} container - The DOM element to render into
+     */
+    function renderNode(node, container) {
+      if (node.type === "file") {
+        // FILE: Create a simple anchor link
+        const a = document.createElement("a");
+        a.href = prefix + "pages/" + node.path;
+        a.textContent = node.name;
+        a.style.display = "block";
+        container.appendChild(a);
+        return;
+      }
 
-function renderNode(node, container) {
-  if (node.type === "file") {
-    const a = document.createElement("a");
-    a.href = prefix + "pages/" + node.path;
-    a.textContent = node.name;
-    a.style.display = "block";
-    container.appendChild(a);
-    return;
-  }
+      if (node.type === "folder") {
+        // FOLDER: Create a collapsible section
+        const folderId = "folder_" + node.path; // Unique ID based on path
 
-  if (node.type === "folder") {
-    const folderId = "folder_" + node.path; // ID único basado en la ruta
+        // Create the folder header (clickable title)
+        const header = document.createElement("div");
+        header.classList.add("folder-header");
 
-    const header = document.createElement("div");
-    header.classList.add("folder-header");
+        // Folder icon (expand/collapse indicator)
+        const icon = document.createElement("span");
+        icon.classList.add("folder-icon");
 
-    const icon = document.createElement("span");
-    icon.classList.add("folder-icon");
+        // Folder name/title
+        const title = document.createElement("span");
+        title.textContent = node.name;
+        title.classList.add("folder-title");
 
-    const title = document.createElement("span");
-    title.textContent = node.name;
-    title.classList.add("folder-title");
+        // Assemble the header
+        header.appendChild(icon);
+        header.appendChild(title);
+        container.appendChild(header);
 
-    header.appendChild(icon);
-    header.appendChild(title);
-    container.appendChild(header);
+        // Create the content container (hidden by default)
+        const sub = document.createElement("div");
+        sub.classList.add("folder-content");
+        sub.style.marginLeft = "15px"; // Indent for visual hierarchy
+        container.appendChild(sub);
 
-    const sub = document.createElement("div");
-    sub.classList.add("folder-content");
-    sub.style.marginLeft = "15px";
-    container.appendChild(sub);
+        // Recursively render children (subfolders and files)
+        node.children.forEach(child => renderNode(child, sub));
 
-    // Renderizar hijos
-    node.children.forEach(child => renderNode(child, sub));
+        /**
+         * RESTORE COLLAPSED/EXPANDED STATE
+         * Uses sessionStorage to remember folder states across page visits
+         * Default: folders start collapsed
+         */
+        const savedState = sessionStorage.getItem(folderId);
+        const isCollapsed = savedState === "closed" || savedState === null;
 
-    // --- APLICAR ESTADO GUARDADO ---
-    const savedState = sessionStorage.getItem(folderId);
-    const isCollapsed = savedState === "closed" || savedState === null;
+        if (isCollapsed) {
+          sub.classList.add("collapsed"); // Hide the folder contents
+          icon.innerHTML = iconExpand; // Show expand icon
+        } else {
+          icon.innerHTML = iconCollapse; // Show collapse icon
+        }
 
-    if (isCollapsed) {
-      sub.classList.add("collapsed");
-      icon.innerHTML = iconExpand;
-    } else {
-      icon.innerHTML = iconCollapse;
+        /**
+         * SAVE AND RESTORE SCROLL POSITION
+         * Remembers where the user was scrolled in the sidebar
+         * Useful for long navigation menus
+         */
+        const tree = document.getElementById("sidebar-menu");
+
+        // Restore scroll position on page load
+        const savedScroll = sessionStorage.getItem("sidebar-menu");
+        if (savedScroll !== null) {
+          tree.scrollTop = parseInt(savedScroll, 10);
+        }
+
+        // Save scroll position in real-time as user scrolls
+        tree.addEventListener("scroll", () => {
+          sessionStorage.setItem("sidebar-menu", tree.scrollTop);
+        });
+
+        /**
+         * TOGGLE FOLDER EXPANDED/COLLAPSED
+         * Click handler for the folder header
+         */
+        header.addEventListener("click", () => {
+          const collapsed = sub.classList.toggle("collapsed");
+
+          if (collapsed) {
+            // Folder is now collapsed
+            icon.innerHTML = iconExpand;
+            sessionStorage.setItem(folderId, "closed");
+          } else {
+            // Folder is now expanded
+            icon.innerHTML = iconCollapse;
+            sessionStorage.setItem(folderId, "open");
+          }
+        });
+      }
     }
 
+    // Render all top-level nodes into the menu
+    ordered.forEach(node => renderNode(node, menu));
 
-    const tree = document.getElementById("sidebar-menu");
-
-    // Restaurar scroll
-    const savedScroll = sessionStorage.getItem("sidebar-menu");
-    if (savedScroll !== null) {
-        tree.scrollTop = parseInt(savedScroll, 10);
-    }
-
-    // Guardar scroll en tiempo real
-    tree.addEventListener("scroll", () => {
-        sessionStorage.setItem("sidebar-menu", tree.scrollTop);
-    });
-
-
-    // --- EVENTO CLICK ---
-    header.addEventListener("click", () => {
-      const collapsed = sub.classList.toggle("collapsed");
-
-      if (collapsed) {
-        icon.innerHTML = iconExpand;
-        sessionStorage.setItem(folderId, "closed");
-      } else {
-        icon.innerHTML = iconCollapse;
-        sessionStorage.setItem(folderId, "open");
+    /**
+     * HIGHLIGHT CURRENT PAGE
+     * Adds an "active" class to the link of the current page
+     * Allows CSS styling to show which page is being viewed
+     */
+    const currentPath = path.replace(/^\//, ""); // Remove leading slash
+    const links = document.querySelectorAll("#sidebar-menu a");
+    links.forEach(a => {
+      if (a.href.endsWith(currentPath)) {
+        a.classList.add("active"); // Mark this link as the current page
       }
     });
-  }
-}
+  })
+  .catch(err => console.error("Error loading sidebar:", err));
 
+// ============================================================================
+// STEP 5: Initialize hamburger menu for mobile
+// ============================================================================
+/**
+ * Manages the responsive hamburger menu for mobile devices
+ * Handles:
+ * - Toggle sidebar visibility on mobile
+ * - Auto-hide/show based on screen size (999px breakpoint)
+ * - Sync button state with sidebar visibility
+ * - Apply appropriate CSS classes based on screen size
+ */
+function cargarMenuHamburguesa() {
+  const btn = document.getElementById("icon-btn"); // Hamburger button in main
+  const btn2 = document.getElementById("icon-btn2"); // Close button in sidebar
+  const nav = document.getElementById("sidebar"); // Sidebar element
+  const main = document.getElementsByTagName("main")[0]; // Main content area
 
-
-
-  // Renderizar todo en orden
-  ordered.forEach(node => renderNode(node, menu));
-  // ===============================================================
-  // 5. Resaltar la página actual
-  // ===============================================================
-  const currentPath = path.replace(/^\//, "");
-  const links = document.querySelectorAll("#sidebar-menu a");
-  links.forEach(a => {
-    if (a.href.endsWith(currentPath)) {
-      a.classList.add("active");
-    }
-  });
-})
-
-
-//Menu hamburguesa
-
-function cargarMenuHamburguesa(){
-  const btn = document.getElementById("icon-btn");
-  const btn2 = document.getElementById("icon-btn2");
-  const nav = document.getElementById("sidebar");
-  const main = document.getElementsByTagName("main")[0]
-
-  // Evento de botones
+  /**
+   * EVENT: Click hamburger or close button
+   * Toggles sidebar visibility on mobile
+   */
   btn.addEventListener("click", () => {
-    nav.classList.toggle("show");
-    btn2.classList.toggle("active");
-    main.classList.toggle("sidebarActiva");
+    nav.classList.toggle("show"); // Show/hide sidebar
+    btn2.classList.toggle("active"); // Update button appearance
+    main.classList.toggle("sidebarActiva"); // Adjust main content layout
   });
 
   btn2.addEventListener("click", () => {
@@ -222,20 +329,27 @@ function cargarMenuHamburguesa(){
     main.classList.toggle("sidebarActiva");
   });
 
-  // Media query para detectar móvil
+  /**
+   * RESPONSIVE BEHAVIOR
+   * Media query at 999px breakpoint to detect mobile vs desktop
+   * Automatically adjusts sidebar visibility based on screen size
+   */
   const mq = window.matchMedia("(max-width: 999px)");
 
-  // Función que se ejecuta SOLO cuando se cruza el límite 999px
+  /**
+   * Handler for screen size changes
+   * Only executes when crossing the 999px threshold, not on every resize
+   */
   function handleChange(e) {
     if (e.matches) {
-      // Hemos pasado a móvil
+      // MOBILE MODE: Hide sidebar, show hamburger menu
       nav.classList.remove("show");
       btn2.classList.remove("active");
       main.classList.remove("sidebarActiva");
       main.classList.remove("pc");
       
     } else {
-      // Hemos pasado a PC
+      // DESKTOP MODE: Show sidebar permanently
       nav.classList.add("show");
       btn2.classList.add("active");
       main.classList.add("sidebarActiva");
@@ -243,24 +357,36 @@ function cargarMenuHamburguesa(){
     }
   }
 
-  // Ejecutar al cargar
+  // Execute on initial load to set correct state
   handleChange(mq);
 
-  // Ejecutar SOLO cuando se cruza 999px
+  // Execute only when crossing the 999px threshold
   mq.addEventListener("change", handleChange);
 }
 
-
+// ============================================================================
+// STEP 6: Copy-to-clipboard buttons for code blocks
+// ============================================================================
+/**
+ * Adds copy buttons to all inline code blocks (not file code blocks)
+ * Users can click to copy code to their clipboard
+ */
 document.querySelectorAll('pre.multiline-code').forEach(pre => {
+    // Skip file code blocks (they get their own copy button in step 3)
     if (pre.classList.contains("fileCode")) return;
+    
+    // Create and attach copy button
     createCopyButton(pre);
 });
 
-
-
-function createCopyButton(father){
+/**
+ * Creates a copy button and appends it to a code block
+ * 
+ * @param {Element} father - The <pre> element to add the button to
+ */
+function createCopyButton(father) {
     father.insertAdjacentHTML("beforeend", `
-          <button class="copy-btn" title="Copy">
+          <button class="copy-btn" title="Copy code to clipboard">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
                   <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                   <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
@@ -268,15 +394,24 @@ function createCopyButton(father){
           </button>
     `);
 
+    // Set up the click handler for this button
     putCopyButton(father.querySelector(".copy-btn"));
 }
 
-function putCopyButton(btn){
+/**
+ * Handles copy button click event
+ * Copies code content to clipboard and shows confirmation
+ * 
+ * @param {Element} btn - The copy button element
+ */
+function putCopyButton(btn) {
   btn.addEventListener('click', async () => {
+    // Disable button and show "copied" state
     btn.classList.add('copied', 'disabled');
     
     const originalHTML = btn.innerHTML;
 
+    // Change button appearance to show "Copied" message
     btn.innerHTML = `
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
             <polyline points="20 6 9 17 4 12"></polyline>
@@ -285,33 +420,53 @@ function putCopyButton(btn){
     `;
 
     try {
-        const pre = btn.closest('pre.multiline-code');
-        const code = pre.querySelector('code');
-        if (!code) throw new Error('No code found');
+      // Find the code element within the <pre> block
+      const pre = btn.closest('pre.multiline-code');
+      const code = pre.querySelector('code');
+      if (!code) throw new Error('No code found');
 
-        await navigator.clipboard.writeText(code.innerText);
+      // Copy the code text to clipboard
+      await navigator.clipboard.writeText(code.innerText);
 
-        setTimeout(() => {
-            btn.classList.remove('copied', 'disabled');
-            btn.innerHTML = originalHTML;
-        }, 1000);
-
-    } catch (err) {
-        console.error('Error al copiar:', err);
+      // Revert button after 1 second
+      setTimeout(() => {
         btn.classList.remove('copied', 'disabled');
         btn.innerHTML = originalHTML;
+      }, 1000);
+
+    } catch (err) {
+      console.error('Error copying code:', err);
+      // Reset button on error
+      btn.classList.remove('copied', 'disabled');
+      btn.innerHTML = originalHTML;
     }
   });
 }
 
-
-
-
+// ============================================================================
+// STEP 7: Initialize syntax highlighting for code blocks
+// ============================================================================
+/**
+ * Apply highlight.js (hljs) to all code blocks with auto="true"
+ * This provides syntax highlighting for popular programming languages
+ */
 const codes = document.querySelectorAll('pre[auto="true"] > code');
 codes.forEach(el => {
-    hljs.highlightElement(el);
+    hljs.highlightElement(el); // Apply syntax highlighting
 });
 
+// ============================================================================
+// STEP 8: Initialize media players and image zoom
+// ============================================================================
+/**
+ * medium-zoom: Click on images to zoom in/out
+ * Enhanced viewing experience for documentation graphics
+ */
 mediumZoom('.img');
-const players = Plyr.setup('video');
-const aundioPlayers = Plyr.setup('audio');
+
+/**
+ * Plyr.js: Initialize video and audio players
+ * Provides custom, responsive media controls
+ */
+const players = Plyr.setup('video'); // Video player controls
+const aundioPlayers = Plyr.setup('audio'); // Audio player controls

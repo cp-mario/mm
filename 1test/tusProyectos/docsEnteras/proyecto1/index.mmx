@@ -79,7 +79,7 @@ Also you can put a URL
 [Example](https://example.com)
 And you can go to a heading in your document like a URL but with #id instead of the URL
 [H2](#2)
-You can link to another page on your document like the heading but with pages/path/to/the/page/from/pages (remember the .html) [Introduction](pages/Introduction MMX.html)
+You can link to another page on your document like the heading but with pages/path/to/the/page/from/pages (remember the .html) [Introduction](pages/Introduction MMX.html) the introduccion
 And also a link to a heading in another page pages/path/to/the/page/from/pages#headingId [Introduction H2](pages/Introduction MMX.html#2")
 
 some inline `codeffffffff df df dsf fd d it can be in diferent lines` or 
