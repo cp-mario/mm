@@ -16,7 +16,7 @@ export function mmxToHtml(mmx) {
     result = parseMultilineBlocks(result, block);
   }
 
-  // 3. 🔥 PROTEGER RAW ANTES DE TODO LO DEMÁS
+  // 3. PROTEGER RAW ANTES DE TODO LO DEMÁS
   const extracted = extractRawBlocks(result);
   result = extracted.html;
 
