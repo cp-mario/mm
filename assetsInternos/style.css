@@ -80,11 +80,19 @@ body{
     background-color: #f3f7fb;
 }
 
-main img {
+main .img {
     width: 100%;
     height: auto;
     margin-block: 20px;
 }
+
+
+main .inlineImg {
+    height: 1.2em;
+    width: 1.2em;
+    vertical-align: -5px;
+}
+
 
 .copy-btn {
     padding: 2px;
@@ -151,7 +159,7 @@ code:not([data-auto]) {
 }
 
 .plyr {
-    border-radius: 10px;
+    border-radius: 5px;
     margin-block: 16px; /* Margen arriba y abajo del video */
 }
 

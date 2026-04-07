@@ -312,6 +312,6 @@ codes.forEach(el => {
     hljs.highlightElement(el);
 });
 
-mediumZoom('img');
+mediumZoom('.img');
 const players = Plyr.setup('video');
 const aundioPlayers = Plyr.setup('audio');

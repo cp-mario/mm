@@ -134,6 +134,10 @@ monoline: [
     }
   ],
   inline: [
+    {
+      regex: /<\-([^>]+)\->/g,
+      replace: (match, src) => `<img class="inlineImg" alt="icon" src="${src}">`
+    },
     { 
       regex: /!!!\(([^)]+)\)(?:\s+([\w\-\s]+))?/g, 
       replace: (match, src, classes) => {
@@ -151,8 +155,8 @@ monoline: [
     {
       regex: /!\[([^\]]*)\]\(([^)]+)\)(?:\s+([\w\-\s]+))?/g,
       replace: (match, alt, src, classes) => {
-        const cls = classes ? ` class="${classes.trim().split(/\s+/).join(' ')}"` : '';
-        return `<img alt="${alt}" src="${src}"${cls}>`;
+        const cls = classes ? ` class="${classes.trim().split(/\s+/).join(' ')}` : '';
+        return `<img alt="${alt}" class="img" src="${src}"${cls}>`;
       }
     },
     {
