@@ -1,27 +1,11 @@
 /**
- * MMX PATTERN DEFINITIONS
- * 
- * This file exports all regex patterns used to convert MMX (custom markdown-like format) to HTML.
- * Patterns are organized in three categories:
- * - monoline: Single-line patterns (headings, hard breaks, separators, embedded code)
- * - multiline: Multi-line block patterns (code blocks, tables, notes)
- * - inline: Inline formatting patterns (bold, italic, links, images, audio, video)
- * 
- * Each pattern has a regex to match the MMX syntax and a replace function to convert to HTML.
+ * MMX Pattern Definitions
+ * Regex patterns for MMX to HTML conversion
  */
 
 export const PATTERNS = {
-  /**
-   * MONOLINE PATTERNS - Single-line transformations
-   * These patterns match and convert single lines of MMX to HTML
-   * Processed early in the conversion pipeline
-   */
   monoline: [
-    /**
-     * HEADING LEVEL 6 (######)
-     * Supports optional ID for anchor links using %{id}% syntax
-     * Example: ###### My Subheading %{section-1}%
-     */
+    // Heading level 6: ###### Title %{id}%
     { 
       regex: /^###### (.*?)\s*(?:%\{(.+?)\}%\s*)?$/gm, 
       replace: (match, text, id) => id 
@@ -29,10 +13,7 @@ export const PATTERNS = {
         : `<h6>${text}</h6>`
     },
 
-    /**
-     * HEADING LEVEL 5 (#####)
-     * Supports optional ID for anchor links
-     */
+    // Heading level 5: ##### Title %{id}%
     { 
       regex: /^##### (.*?)\s*(?:%\{(.+?)\}%\s*)?$/gm, 
       replace: (match, text, id) => id 
@@ -40,10 +21,7 @@ export const PATTERNS = {
         : `<h5>${text}</h5>`
     },
 
-    /**
-     * HEADING LEVEL 4 (####)
-     * Supports optional ID for anchor links
-     */
+    // Heading level 4: #### Title %{id}%
     { 
       regex: /^#### (.*?)\s*(?:%\{(.+?)\}%\s*)?$/gm, 
       replace: (match, text, id) => id 
@@ -51,10 +29,7 @@ export const PATTERNS = {
         : `<h4>${text}</h4>`
     },
 
-    /**
-     * HEADING LEVEL 3 (###)
-     * Supports optional ID for anchor links
-     */
+    // Heading level 3: ### Title %{id}%
     { 
       regex: /^### (.*?)\s*(?:%\{(.+?)\}%\s*)?$/gm, 
       replace: (match, text, id) => id 
@@ -62,10 +37,7 @@ export const PATTERNS = {
         : `<h3>${text}</h3>`
     },
 
-    /**
-     * HEADING LEVEL 2 (##)
-     * Supports optional ID for anchor links
-     */
+    // Heading level 2: ## Title %{id}%
     { 
       regex: /^## (.*?)\s*(?:%\{(.+?)\}%\s*)?$/gm, 
       replace: (match, text, id) => id 
@@ -73,11 +45,7 @@ export const PATTERNS = {
         : `<h2>${text}</h2>`
     },
 
-    /**
-     * HEADING LEVEL 1 (#)
-     * Supports optional ID for anchor links
-     * Top-level heading, often used as page title
-     */
+    // Heading level 1: # Title %{id}%
     { 
       regex: /^# (.*?)\s*(?:%\{(.+?)\}%\s*)?$/gm, 
       replace: (match, text, id) => id 
@@ -85,29 +53,13 @@ export const PATTERNS = {
         : `<h1>${text}</h1>`
     },
 
-    /**
-     * HARD BREAK (#b)
-     * Syntax: #b anywhere on a line
-     * Creates a line break in the output
-     * Converted to placeholder for later processing
-     */
+    // Hard break: #b
     { regex: /^#b.*$/gm, replace: '%%HARD_BREAK%%' },
 
-    /**
-     * HORIZONTAL SEPARATOR (#s)
-     * Syntax: #s anywhere on a line
-     * Creates a <hr> (horizontal rule) element for visual separation
-     */
+    // Horizontal separator: #s
     { regex: /^#s.*$/gm, replace: '<hr>' },
 
-    /**
-     * EMBEDDED IFRAME/RAW HTML (#iframe())
-     * Syntax: #iframe( ¡<html code here>! )
-     * The special characters ¡ and ! mark the content boundaries
-     * Used to embed interactive content like embeds, widgets, etc.
-     * 
-     * Example: #iframe( ¡<iframe src="..."></iframe>! )
-     */
+    // Embedded iframe: #iframe( ¡<html>! )
     {
       regex: /^\s*#iframe\(\s*¡([\s\S]+?)!\s*\)\s*$/gm,
       replace: (match, content) => {
@@ -116,56 +68,21 @@ export const PATTERNS = {
       }
     },
 
-    /**
-     * CODE FILE INCLUSION (#code())
-     * Syntax: #code(path/to/file.txt) [flags]
-     * Loads code from external files and displays in a <pre> block
-     * 
-     * Flags (optional, space-separated):
-     * - auto: Enable automatic syntax highlighting (uses hljs)
-     * - className: Additional CSS classes for styling
-     * 
-     * Examples:
-     *   #code(assets/example.js) auto
-     *   #code(assets/config.json) highlighting
-     *   #code(assets/data.txt) auto className1 className2
-     */
+    // Code file inclusion: #code(path/to/file) [flags]
     { 
       regex: /^#code\((.+?)\)(?:\s+([\w\s]+))?$/gm, 
       replace: (match, path, flags) => {
-        // Parse the flags string into an array of tokens
         const opts = flags ? flags.trim().split(/\s+/) : [];
-
-        // Check if 'auto' flag is present (for automatic syntax highlighting)
         const auto = opts.includes("auto");
-
-        // Get all other flags as additional CSS classes
         const extraClasses = opts.filter(f => f !== "auto");
-
-        // Base CSS classes for styling
         let classes = ["fileCode", "multiline-code", ...extraClasses];
-
-        // Return <pre> with path attribute and optional auto flag
-        // The path is used by client-side script to fetch and load the file
         return auto
           ? `<pre class="${classes.join(" ")}" path="${path}" auto="true"></pre>`
           : `<pre class="${classes.join(" ")}" path="${path}"></pre>`;
       }
     },
 
-    /**
-     * AUDIO (BLOCK-LEVEL)
-     * Syntax: !!!( path/to/audio.mp3 ) [optional classes]
-     * Must be on its own line at the start
-     * Creates an audio player with controls
-     * Useful for sound effects, music, audio content
-     * 
-     * Classes are optional CSS classes for styling/layout
-     * 
-     * Example:
-     *   !!!( assets/intro.mp3 ) audio-player medium-size
-     *   !!!( /uploads/song.wav )
-     */
+    // Block audio: !!!( path ) [classes]
     { 
       regex: /^!!!\(([^)]+)\)(?:\s+([\w\-\s]+))?\s*$/gm, 
       replace: (match, src, classes) => {
@@ -174,17 +91,7 @@ export const PATTERNS = {
       }
     },
 
-    /**
-     * VIDEO (BLOCK-LEVEL)
-     * Syntax: !!( path/to/video.mp4 ) [optional classes]
-     * Must be on its own line at the start
-     * Creates a video player with controls
-     * Supports common video formats (mp4, webm, ogg)
-     * 
-     * Example:
-     *   !!( assets/tutorial.mp4 ) responsive
-     *   !!( assets/demo.webm )
-     */
+    // Block video: !!( path ) [classes]
     { 
       regex: /^!!\(([^)]+)\)(?:\s+([\w\-\s]+))?\s*$/gm, 
       replace: (match, src, classes) => {
@@ -193,19 +100,7 @@ export const PATTERNS = {
       }
     },
 
-    /**
-     * IMAGE (BLOCK-LEVEL)
-     * Syntax: ![alt text](path/to/image.jpg) [optional classes]
-     * Must be on its own line at the start
-     * Standard markdown-style image syntax
-     * Alt text is important for accessibility
-     * 
-     * Classes are optional CSS classes for styling
-     * 
-     * Example:
-     *   ![My Profile](assets/profile.jpg) rounded centered
-     *   ![Screenshot](assets/screenshot.png)
-     */
+    // Block image: ![alt](path) [classes]
     {
       regex: /^!\[([^\]]*)\]\(([^)]+)\)(?:\s+([\w\-\s]+))?\s*$/gm,
       replace: (match, alt, src, classes) => {
@@ -215,27 +110,8 @@ export const PATTERNS = {
     }
   ],
 
-  /**
-   * MULTILINE PATTERNS - Block-level transformations
-   * These patterns match opening (:::) and closing lines to define blocks
-   * Processed by parseMultilineBlocks() in parser.js
-   */
   multiline: [
-    /**
-     * NOTE BLOCK
-     * Syntax:
-     *   :::note [optional classes]
-     *   Content here...
-     *   :::
-     * 
-     * Creates a highlighted note box. Automatically prefixes with "Note:" label.
-     * Classes can be added for custom styling.
-     * 
-     * Example:
-     *   :::note important warning
-     *   This is an important warning message.
-     *   :::
-     */
+    // Note block: :::note [classes] ... :::
     {
       name: 'note',
       open: /^:::note(?:\s+([^\n]+))?\s*$/gm,
@@ -244,94 +120,17 @@ export const PATTERNS = {
       class: 'note',
     },
 
-    /**
-     * CODE/SYNTAX HIGHLIGHTING BLOCK
-     * Syntax:
-     *   :::code [language] [flags]
-     *   Code here...
-     *   :::
-     * 
-     * Creates a syntax-highlighted code block.
-     * Raw: true = HTML entities are escaped to preserve code literally
-     * 
-     * Flags (optional):
-     * - Language name (e.g., javascript, python, html) - for syntax highlighting
-     * - auto: Enable automatic syntax highlighting with hljs
-     * 
-     * Examples:
-     *   :::code javascript auto
-     *   console.log('Hello World');
-     *   :::
-     * 
-     *   :::code python
-     *   def hello():
-     *       print("Hello")
-     *   :::
-     */
+    // Code block: :::code [language] [flags] ... :::
     {
       name: 'code',
       open: /^:::code(?:\s+([^\n]+))?\s*$/gm,
       close: /^:::\s*$/gm,
       tag: 'pre',
       class: 'multiline-code',
-      raw: true  // Important: escape HTML entities to preserve code
+      raw: true
     },
 
-        /**
-     * STANDARD TABLE
-     * Syntax:
-    ... existing code ...
-
-     * TABLE BLOCK
-     * Syntax:
-     *   #table [mode] [classes]
-     *   #endtable
-     *
-     * Mode (optional, default: v):
-     *   v - Vertical headers (first column = titles)
-     *   h - Horizontal headers (first row = titles)
-     *   b - Both (first row and first column = titles)
-     *
-     * Classes (optional): CSS classes for styling
-     *
-     * Content format (pipes separate columns):
-     *   title|title2|title3
-     *   title|content
-     *   title|content below
-     *
-     * Note: No prefixes (##+, #+) are used in content. The mode determines header placement.
-     *
-     * Examples:
-     *   #table v striped
-     *   Nombre|Puntaje|Estado
-     *   Alice|95|Pass
-     *   #endtable
-     *
-     *   #table h bordered
-     *   Nombre|Puntaje|Estado
-     *   Alice|95|Pass
-     *   #endtable
-     *
-     *   #table b striped
-     *   |Edad|Nombre|Puntaje
-     *   |30|Alice|95
-     *   #endtable
-     *
-     * Examples:
-     *   #table striped
-     *   ##+ Name | Score | Status
-     *   #+ Age | 30 | Pass
-     *   Alice | 95 | Pass
-     *   Bob | 87 | Pass
-     *   Summary | Results | Complete
-     *   #endtable
-     *
-     *   #table(v) bordered
-     *   Name | Score | Status
-     *   Alice | 95 | Pass
-     *   Bob | 87 | Pass
-     *   #endtable
-     */
+    // Table block: #table [mode] [classes] ... #endtable
     {
       name: 'table',
       open: /^#table(?:\(([^)]+)\))?(?:\s+([^\n]+))?\s*$/gm,
@@ -339,40 +138,17 @@ export const PATTERNS = {
       tag: 'table',
       class: 'table',
       raw: false
+    },
+  ],
 
-      },
-
-      ],
-
-  /**
-   * INLINE PATTERNS - Character-level formatting
-   * These patterns match inline content and convert to HTML formatting
-   * Applied to regular text and text within blocks (but not inside <pre> code blocks)
-   */
   inline: [
-    /**
-     * INLINE IMAGE ICON
-     * Syntax: <-path/to/image.svg->
-     * Display small inline images/icons
-     * Common for status indicators, badges, visual elements
-     * 
-     * Example: <-assets/icon-check.svg->
-     */
+    // Inline image icon: <-path/to/image->
     {
       regex: /<\-([^>]+)\->/g,
       replace: (match, src) => `<img class="inlineImg" alt="icon" src="${src}">`
     },
 
-    /**
-     * LINK/ANCHOR
-     * Syntax: [link text](https://example.com)
-     * Standard markdown-style link syntax
-     * External links open in a new tab (target="_blank")
-     * 
-     * Example:
-     *   [Click here](https://example.com)
-     *   [Documentation](https://docs.example.com)
-     */
+    // Link: [text](url)
     {
       regex: /\[([^\]]+)\]\(([^)]+)\)/g,
       replace: (match, text, href) => {
@@ -380,40 +156,19 @@ export const PATTERNS = {
       }
     },
 
-    /**
-     * BOLD TEXT
-     * Syntax: **text**
-     * Creates <strong> tag for important, bold text
-     * 
-     * Example: This is **very important** text.
-     */
+    // Bold: **text**
     {
       regex: /\*\*(.*?)\*\*/g,
       replace: (match, text) => `<strong>${text}</strong>`
     },
 
-    /**
-     * ITALIC TEXT
-     * Syntax: *text* or _text_
-     * Creates <em> tag for emphasized, italic text
-     * Note: Single asterisks are used for italic
-     * 
-     * Example: This is *emphasized* text.
-     */
+    // Italic: *text*
     {
       regex: /\*(.*?)\*/g,
       replace: (match, text) => `<em>${text}</em>`
     },
 
-    /**
-     * COLORED TEXT / TEXT WITH STYLE
-     * Syntax: <c="color">text</c>
-     * Apply custom colors to text
-     * 
-     * Example:
-     *   <c="red">This is red text</c>
-     *   <c="#0099FF">This is blue text</c>
-     */
+    // Colored text: <c="color">text</c>
     { 
       regex: /<c="([^"]+)">(.*?)<\/c>/gs,
       replace: (match, color, content) => {
@@ -421,15 +176,7 @@ export const PATTERNS = {
       }
     },
 
-    /**
-     * INLINE CODE / CODE SNIPPET
-     * Syntax: `code`
-     * Displays inline code with monospace font
-     * 
-     * Example:
-     *   The `console.log()` function prints to console.
-     *   Use `const` for javascript keywords
-     */
+    // Inline code: `code`
     { 
       regex: /`([^`]+)`/g, 
       replace: (match, code) => {
