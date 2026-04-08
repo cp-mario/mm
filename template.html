@@ -4,6 +4,10 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+        <!-- Preconnects for faster font loading to reduce CLS caused by late font load -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
         <!-- Titulo añadido desde main.js al generar el html --> 
         <title>{{title}}</title>
 
@@ -15,6 +19,22 @@
         <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/dist/medium-zoom.min.js"></script>
         
         <!-- Enlazar el script, el css y el css de la sidebar, y calacular la distancia a la raiz para tener el prefijo (prefix) --> 
+        <!-- Inline critical layout to reduce CLS by reserving space for the sidebar on desktop -->
+        <style>
+          @media (min-width: 1000px) {
+            main { margin-left: 300px; }
+            #sidebar {
+              left: 0;
+              top: 0;
+              width: 300px;
+              height: 100%;
+              position: fixed;
+            }
+          }
+          /* Improve image/video stability: reserve space for images and videos and lazy-load images by default */
+          img.img { display: block; max-width: 100%; height: auto; }
+          video { width: 100%; height: auto; display: block; }
+        </style>
         <script>
             const cacheBust = Date.now();
             const path = window.location.pathname;
@@ -52,7 +72,8 @@
         <main>
             <!-- Donde se insertara el contenido de la pagina --> 
             {{content}}
-            <div class="madeWithMMX">Made with <a target="_blank" href="https://github.com/cp-mario/MMX">MMX</a></div>
+            <hr id="madeWithMMXHr">
+            <div id="madeWithMMX">Made with <a target="_blank" href="https://github.com/cp-mario/MMX">MMX</a></div>
         </main>
         <!-- Donde se cargara la sidebar desde script.js -->
     </body>

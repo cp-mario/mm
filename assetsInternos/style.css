@@ -6,19 +6,24 @@
 
 /* Made with MMX text */
 
-.madeWithMMX {
-    margin-top: 70px;
+#madeWithMMX {
     font-family: "JetBrains Mono", monospace;
     color: #a09b9b;
     text-align: center;
 }
 
-.madeWithMMX a:hover{
+#madeWithMMX a:hover{
     color: #424242 !important;
 }
 
-.madeWithMMX a{
+#madeWithMMX a{
     color: #636363 !important;
+}
+
+
+#madeWithMMXHr {
+    margin-top: 50px !important;
+    margin-bottom: 10px !important;
 }
 
 
@@ -82,6 +87,19 @@ main{
     min-width: 0px;
     padding-inline: 10%;
     flex-grow: 1;
+}
+
+/* Improve CLS by preserve predictable space for media and ensure responsive sizing */
+img.img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+video, audio {
+  width: 100%;
+  height: auto;
+  display: block;
 }
 
 .audio{

@@ -87,7 +87,7 @@ export const PATTERNS = {
       regex: /^!!!\(([^)]+)\)(?:\s+([\w\-\s]+))?\s*$/gm, 
       replace: (match, src, classes) => {
         const cls = classes ? ` ${classes.trim().split(/\s+/).join(' ')}` : '';
-        return `<div class="audio${cls}"><audio src="${src}" controls></audio></div>`;
+        return `<div class="audio${cls}"><audio src="${src}" controls style="width:100%"></audio></div>`;
       }
     },
 
@@ -96,7 +96,7 @@ export const PATTERNS = {
       regex: /^!!\(([^)]+)\)(?:\s+([\w\-\s]+))?\s*$/gm, 
       replace: (match, src, classes) => {
         const clsAttr = classes ? ` class="${classes.trim().split(/\s+/).join(' ')}"` : '';
-        return `<video src="${src}" controls${clsAttr}></video>`;
+        return `<video src="${src}" controls${clsAttr} style="width:100%"></video>`;
       }
     },
 
@@ -105,7 +105,8 @@ export const PATTERNS = {
       regex: /^!\[([^\]]*)\]\(([^)]+)\)(?:\s+([\w\-\s]+))?\s*$/gm,
       replace: (match, alt, src, classes) => {
         const cls = classes ? ` class="${classes.trim().split(/\s+/).join(' ')}"` : '';
-        return `<img alt="${alt}" class="img" src="${src}"${cls}>`;
+        // Lazy-load images to reduce CLS caused by late image loading
+        return `<img alt="${alt}" class="img" src="${src}"${cls} loading="lazy">`;
       }
     }
   ],
