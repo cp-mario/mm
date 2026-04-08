@@ -4,6 +4,23 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
 
 
+/* Made with MMX text */
+
+.madeWithMMX {
+    margin-top: 70px;
+    font-family: "JetBrains Mono", monospace;
+    color: #a09b9b;
+    text-align: center;
+}
+
+.madeWithMMX a:hover{
+    color: #424242 !important;
+}
+
+.madeWithMMX a{
+    color: #636363 !important;
+}
+
 
 
 /* Paletas de colores */
@@ -60,7 +77,7 @@ main p{
 }
 
 main{
-    margin-bottom: 100px;
+    margin-bottom: 20px;
     max-width: 1000px;
     min-width: 0px;
     padding-inline: 10%;
