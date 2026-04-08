@@ -11,6 +11,7 @@
     /* TODO implementar esto en el codigo */
     --border-color: #a7a7a7;
     --border-radius-base: 5px;
+    --border-width: 1px;
 }
 
 
@@ -260,43 +261,25 @@ pre.multiline-code.noCopy .copy-btn{
 main table {
     height: 100%;
     border-collapse: collapse;
+    border-spacing: 0;
     width: 100%;
-    border-radius: var(--border-radius-base);
+    overflow: hidden;
+    margin-block: 10px;
 }
 
-/* Vertical header cells (first column) */
-th.vertical-title {
-    width: max-content;
+/* Vertical an horizontal header cells */
+th.vertical-title , th.horizontal-title, td.normal-t-item {
     padding: 10px 5px;
-    border: 1px solid #a7a7a7;
-    background-color: #d2e0ec;
-    font-weight: bold;
-}
-
-/* Horizontal header cells (first row) */
-th.horizontal-title {
-    height: 100%;
-    padding: 10px 5px;
-    border: 1px solid #a7a7a7;
-    background-color: #d2e0ec;
-    font-weight: bold;
-}
-
-/* Corner cell for tables with both vertical and horizontal headers */
-th.b-blank {
-    height: 100%;
-    padding: 10px;
-    border: none;
-    background-color: transparent;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    border: var(--border-width) solid #a7a7a7;
+    border-collapse: collapse;
 }
 
 /* Normal table cells */
-td.normal-t-item {
-    height: 100%;
-    padding: 10px 5px;
-    border: 1px solid var(--border-color);
-    text-align: left;
+th.vertical-title , th.horizontal-title {
+    background-color: #d2e0ec;
+    font-weight: bold;
+}
+
+th.vertical-title{
+    width: 20%;
 }
