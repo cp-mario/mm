@@ -87,6 +87,7 @@ main{
     min-width: 0px;
     padding-inline: 10%;
     flex-grow: 1;
+    overflow-wrap: break-word;
 }
 
 /* Improve CLS by preserve predictable space for media and ensure responsive sizing */

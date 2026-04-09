@@ -48,6 +48,22 @@ To go to a header with a tag is as simple as writing a link with like this: `[He
 
 [Here](pages/Examples/Headers example.html) are some examples
 
+## Bold
+
+To put some text in bold is as simple as put the text between two asterisks `**Text in bold**`
+
+Example:
+**This text is in bold**
+
+
+## Italic
+
+To put some text in bold is as simple as put the text between a asterisk `*Text in italic*`
+
+Example:
+*This text is in italic*
+
+
 
 ## Enters
 In mmx writing normally the enters only works if they are dividing two paragraphs, a enter to maka a blank line will not work for that there is the `#b` element.
@@ -109,3 +125,28 @@ Example:
 :::note
 This is a note
 :::
+
+## Multiline code
+This element also prevents de text to be parsed. The text can come from de text like the note or from a text file
+
+
+Normal
+#code(assets/code/codeExample.txt)
+
+
+From a file, at the start of the line
+:::code
+#code(assets/code/note.txt)
+:::
+
+[Here](pages/File sources and paths.html) you can see more detailed the supported code sources
+
+Both are visualy the same and both can have classes:
+auto: auto highligthing
+noMonoSpace: no monospaced font
+noCopy: no copy button
+noCodeBg: the code will not have a background and also with this it's enabled noCopy and noFormatted, and also will not work auto
+noFormatted: in the code if the text is too long instead of a scrollbar the text will continue in the next line like normal text
+
+
+Examples [here](pages/Examples/Code example.html)
