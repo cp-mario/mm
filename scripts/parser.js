@@ -18,24 +18,24 @@ export function mmxToHtml(mmx) {
     result = result.replace(regex, replace);
   }
 
-  // Step 2: Process multi-line blocks
+  // Step 2: Process multi-line blocks (including code blocks with raw content)
   for (const block of PATTERNS.multiline) {
     result = parseMultilineBlocks(result, block);
   }
 
-  // Step 3: Extract and protect raw code blocks
+  // Step 3: Extract and protect raw code blocks BEFORE applying inline patterns
   const extracted = extractRawBlocks(result);
   result = extracted.html;
 
   // Step 4: Wrap plain text in <p> tags
   result = wrapParagraphs(result);
 
-  // Step 5: Apply inline formatting
+  // Step 5: Apply inline formatting (this will NOT affect protected code blocks)
   for (const { regex, replace } of PATTERNS.inline) {
     result = result.replace(regex, replace);
   }
 
-  // Step 6: Restore protected code blocks
+  // Step 6: Restore protected code blocks (with original unprocessed content)
   result = restoreRawBlocks(result, extracted.blocks);
 
   // Step 7: Handle global iframe blocks
