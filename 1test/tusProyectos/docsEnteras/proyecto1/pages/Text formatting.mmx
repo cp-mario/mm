@@ -1,0 +1,111 @@
+# Text formatting
+
+## Normal writing
+
+As simple as writing normally
+:::code
+this is normal text
+:::
+
+Example:
+this is normal text
+
+## Headers
+The headers go from h1 to h6, h1 is bigger than h2 that is bigger than h3...
+
+:::note
+The first h1 in your mmx file will be the title of the page
+:::
+
+
+A header is declared in a new line like in markdown:
+
+:::code
+# This is a h1
+## This is a h2
+### This is a h3
+#### This is a h4
+##### This is a h5
+###### This is a h6
+:::
+
+:::note
+It's highly recomended to only use a single h1 and as many as you want h2, h3, h4, h5, h6.
+:::
+
+You can optionaly put after the header declaration a tag to the header for going to that header with a link
+:::code
+# This is a h1 with a tag %{tag}%
+## This is a h2 with a tag %{Anothertag}%
+### This is a h3 with a tag %{Anothertag2}%
+#### This is a h4 with a tag %{Anothertag3}%
+##### This is a h5 with a tag %{Anothertag4}%
+###### This is a h6 with a tag %{Anothertag5}%
+:::
+
+To go to a header with a tag is as simple as writing a link with like this: `[Header](#id)` or to go to a header in another page:
+`[Header](pages/the/Page/You/Want/To/Go.html#id)`
+
+[Here](pages/Examples/Headers example.html) are some examples
+
+
+## Enters
+In mmx writing normally the enters only works if they are dividing two paragraphs, a enter to maka a blank line will not work for that there is the `#b` element.
+This element only works at the start of the line and with nothing more in the same line
+:::code
+#b
+:::
+
+Here's an example of 3 `#b`
+
+#b
+#b
+#b
+
+## Coloured text
+
+In mmx you can color text with a html style sintax with html supported color formats like hex, rgb or color names:
+:::code
+<c="color">Text in that color</c>
+<c="red">This text will be coloured in red</c>
+<c="blue">This text will be coloured in blue</c>
+<c="#ffcc40">This text will be coloured in yellow</c>
+<c="rgb(130, 130, 130)">This text will be coloured in gray</c>
+:::
+
+Examples
+<c="color">Text in that color </c><c="red">This text will be coloured in red</c> normal text <c="blue">This text will be coloured in blue</c><c="#ffcc40"> This text will be coloured in yellow</c> <c="rgb(130, 130, 130)"> This text will be coloured in gray</c>
+
+## Separators
+A simple separator
+This element `#s` only works at the start of the line and with nothing more in the same line like the `#b`
+
+:::code
+#s
+:::
+
+Example:
+#s
+
+
+## Inline code
+Inline code is declared with
+:::code
+`code`
+:::
+and keeps the code from be processed by the parser, it has monospaced typografy and a background
+
+Example:
+
+`This is some inline code, this dont works inside me: [Header](pages/the/Page/You/Want/To/Go.html#id)`
+
+## Notes
+A note is a piece of text that appears with te text note and a background
+
+#code(assets/code/note.txt)
+
+Example:
+
+:::note
+This is a note
+:::
