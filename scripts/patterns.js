@@ -124,7 +124,7 @@ export const PATTERNS = {
     // Code block: :::code [language] [flags] ... :::
     {
       name: 'code',
-      open: /^:::code(?:\s+([^\n]+))?\s*$/gm,
+      open: /^:::code\s*(.*)$/gm,
       close: /^:::\s*$/gm,
       tag: 'pre',
       class: 'multiline-code',
