@@ -187,8 +187,18 @@ function parseMultilineBlocks(text, config) {
       const match = config.open.exec(line);
       config.open.lastIndex = 0;
 
-      const parenContent = match && match[1] ? match[1].trim() : '';
-      const extraContent = match && match[2] ? match[2].trim() : '';
+      // For code blocks, the entire content after :::code is in group 1
+      // For other blocks, we maintain parenContent and extraContent logic
+      let parenContent = '';
+      let extraContent = '';
+      
+      if (config.name === 'code') {
+        // Code block: everything after :::code is treated as flags
+        extraContent = match && match[1] ? match[1].trim() : '';
+      } else {
+        parenContent = match && match[1] ? match[1].trim() : '';
+        extraContent = match && match[2] ? match[2].trim() : '';
+      }
 
       let tableMode = 'h';
       let tokens = [];
@@ -303,13 +313,8 @@ function extractRawBlocks(html) {
   const blocks = [];
   let i = 0;
 
-  html = html.replace(/<pre class="multiline-code">[\s\S]*?<\/pre>/g, (match) => {
-    const key = `%%RAW_${i++}%%`;
-    blocks.push({ key, value: match });
-    return key;
-  });
-
-  html = html.replace(/<pre[^>]*class="[^"]*\bmultiline-code\b[^"]*"[^>]*>[\s\S]*?<\/pre>/g, (match) => {
+  // Match <pre> tags that have multiline-code class (with any additional classes)
+  html = html.replace(/<pre[^>]*\bmultiline-code\b[^>]*>[\s\S]*?<\/pre>/g, (match) => {
     const key = `%%RAW_${i++}%%`;
     blocks.push({ key, value: match });
     return key;
