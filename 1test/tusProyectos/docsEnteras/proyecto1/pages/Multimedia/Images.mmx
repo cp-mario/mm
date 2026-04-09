@@ -1,0 +1,16 @@
+# Images
+
+Basic sintax:
+
+:::code
+
+![An alternative text if the image does not load](assets/foto.png)
+
+![An alternative text if the image does not load]()
+:::
+
+This would look like this:
+
+![An alternative text if the image does not load](assets/foto.png)
+
+[Here](pages/File sources and paths.html) you can see more detailed the supported image sources
