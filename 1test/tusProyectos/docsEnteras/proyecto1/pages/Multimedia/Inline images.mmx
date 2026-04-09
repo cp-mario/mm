@@ -1,0 +1,11 @@
+# Inline images
+
+Basic sintax:
+
+:::code
+Some text <-ImageSource->
+:::
+
+It will look like this:
+Lorem ipsum <-assets/icon2.svg-> dolor sit amet
+[Here](pages/File sources and paths.html) you can see more detailed the supported inline image sources

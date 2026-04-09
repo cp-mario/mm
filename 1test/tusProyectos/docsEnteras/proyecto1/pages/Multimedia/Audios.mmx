@@ -1,0 +1,17 @@
+# Audios
+
+Basic sintax:
+
+:::code
+!!!(assets/audio.mp3)
+!!!(https://someAudio.com/image.png)
+:::
+
+
+
+It will look like this:
+
+!!!(assets/audio.mp3)
+
+[Here](pages/File sources and paths.html) you can see more detailed the supported audio sources
+The audio player will fill the width of the content.

@@ -1,4 +1,4 @@
-# Images
+# Images %{Title}%
 
 Basic sintax:
 
@@ -9,7 +9,7 @@ Basic sintax:
 
 
 
-This would look like this:
+It will look like this:
 
 ![An alternative text if the image does not load](assets/foto.png)
 [Here](pages/File sources and paths.html) you can see more detailed the supported image sources

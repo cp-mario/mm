@@ -1,0 +1,36 @@
+# Tables
+Basic syntax:
+At the start of the line the end and the start of the table
+#code(assets/code/tableExamples.txt)
+
+**Examples:**
+
+
+Vertical table (default)
+#table v
+Name|Score|State
+Alice|95|Pass
+Bob|87|Pass
+#endtable
+
+Horizontal table
+#table h
+Name|Score|State
+Alice|95|Pass
+Bob|87|Pass
+#endtable
+
+Both sides table, the space in the first line is optional, it does not affect, is for better visual understanding
+
+#table b
+     Name|Score
+Yestarday|Leo|95
+    Today|Bob|87
+#endtable
+
+Undefined mode table (Is a vertical table)
+#table
+Title|Description
+Item 1|Text
+Item 2|More text
+#endtable

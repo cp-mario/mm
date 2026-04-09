@@ -1,0 +1,17 @@
+# Videos
+
+Basic sintax:
+
+:::code
+!!(assets/video.mp4)
+!!(https://someVideo.com/Video.mp4)
+:::
+
+
+
+It will look like this:
+
+!!(assets/video.mp4)
+
+[Here](pages/File sources and paths.html) you can see more detailed the supported video sources
+The videos will fill the width of the content.

@@ -1,4 +1,4 @@
-# Text formatting
+# Text formatting  %{Title}%
 
 ## Normal writing
 
@@ -30,7 +30,7 @@ A header is declared in a new line like in markdown:
 :::
 
 :::note
-It's highly recomended to only use a single h1 and as many as you want h2, h3, h4, h5, h6.
+It's highly recommended to only use a single h1 and as many as you want h2, h3, h4, h5, h6.
 :::
 
 You can optionaly put after the header declaration a tag to the header for going to that header with a link
@@ -58,7 +58,7 @@ Example:
 
 ## Italic
 
-To put some text in bold is as simple as put the text between a asterisk `*Text in italic*`
+To put some text in italic is as simple as put the text between a single asterisk `*Text in italic*`
 
 Example:
 *This text is in italic*
@@ -66,7 +66,7 @@ Example:
 
 
 ## Enters
-In mmx writing normally the enters only works if they are dividing two paragraphs, a enter to maka a blank line will not work for that there is the `#b` element.
+In mmx writing normally the enters only works if they are dividing two paragraphs, a enter to make a blank line will not work for that there is the `#b` element.
 This element only works at the start of the line and with nothing more in the same line
 :::code
 #b
@@ -80,7 +80,7 @@ Here's an example of 3 `#b`
 
 ## Coloured text
 
-In mmx you can color text with a html style sintax with html supported color formats like hex, rgb or color names:
+In mmx you can color text with a html style syntax with html supported color formats like hex, rgb or color names:
 :::code
 <c="color">Text in that color</c>
 <c="red">This text will be coloured in red</c>
@@ -89,7 +89,7 @@ In mmx you can color text with a html style sintax with html supported color for
 <c="rgb(130, 130, 130)">This text will be coloured in gray</c>
 :::
 
-Examples
+**Examples:**
 <c="color">Text in that color </c><c="red">This text will be coloured in red</c> normal text <c="blue">This text will be coloured in blue</c><c="#ffcc40"> This text will be coloured in yellow</c> <c="rgb(130, 130, 130)"> This text will be coloured in gray</c>
 
 ## Separators
@@ -150,3 +150,24 @@ noFormatted: in the code if the text is too long instead of a scrollbar the text
 
 
 Examples [here](pages/Examples/Code example.html)
+
+
+## Links
+
+To link a external page, a documentation page or a header (in this or another page)
+
+Basic sintax:
+
+:::code
+[External page(it opens in another tab)](https://example.com)
+[Documentation page (it opens in this tab)](pages/route/to/page.html)  //do not forget that instead of .mmx here you must put .html
+[Header(it scrolls the content to the header)](#headerId) 
+[Documentation page header (it opens in this tab)](pages/route/to/page.html#headerId)
+:::
+
+**Examples:**
+
+some text [External page(it opens in another tab)](https://example.com) some text
+[Documentation page (it opens in this tab)](pages/Multimedia/Audios.html)
+[Header(it scrolls the content to the header)](#Title) 
+[Documentation page header (it opens in this tab)](pages/Multimedia/Images.html#Title)
