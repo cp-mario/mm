@@ -13,37 +13,40 @@ import { PATTERNS } from "./patterns.js";
 export function mmxToHtml(mmx) {
   let result = mmx;
 
-  // Step 1: Process single-line patterns
-  for (const { regex, replace } of PATTERNS.monoline) {
-    result = result.replace(regex, replace);
-  }
-
-  // Step 2: Process multi-line blocks (including code blocks with raw content)
+  // Step 1: Process multi-line blocks FIRST to isolate raw code blocks
+  // This must happen before monoline patterns so that MMX inside :::code blocks
+  // is not compiled by monoline patterns
   for (const block of PATTERNS.multiline) {
     result = parseMultilineBlocks(result, block);
   }
 
-  // Step 3: Extract and protect raw code blocks BEFORE applying inline patterns
+  // Step 2: Extract and protect raw code blocks IMMEDIATELY
+  // This prevents monoline patterns from affecting code block content
   const extracted = extractRawBlocks(result);
   result = extracted.html;
+
+  // Step 3: NOW process single-line patterns (safe, won't affect protected code)
+  for (const { regex, replace } of PATTERNS.monoline) {
+    result = result.replace(regex, replace);
+  }
 
   // Step 4: Wrap plain text in <p> tags
   result = wrapParagraphs(result);
 
-  // Step 4.5: Extract inline code (backticks) BEFORE applying inline patterns
+  // Step 5: Extract inline code (backticks) BEFORE applying inline patterns
   // This prevents patterns like bold/italic from being applied inside inline code
   const extractedInlineCode = extractInlineCode(result);
   result = extractedInlineCode.html;
 
-  // Step 5: Apply inline formatting (this will NOT affect protected code blocks or inline code)
+  // Step 6: Apply inline formatting (this will NOT affect protected code blocks or inline code)
   for (const { regex, replace } of PATTERNS.inline) {
     result = result.replace(regex, replace);
   }
 
-  // Step 5.5: Restore inline code with proper formatting
+  // Step 7: Restore inline code with proper formatting
   result = restoreInlineCode(result, extractedInlineCode.inlineBlocks);
 
-  // Step 6: Restore protected code blocks (with original unprocessed content)
+  // Step 8: Restore protected code blocks (with original unprocessed content)
   result = restoreRawBlocks(result, extracted.blocks);
 
   // Step 7: Handle global iframe blocks

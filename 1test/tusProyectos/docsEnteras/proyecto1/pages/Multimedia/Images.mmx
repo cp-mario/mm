@@ -3,11 +3,12 @@
 Basic sintax:
 
 :::code
-
 ![An alternative text if the image does not load](assets/foto.png)
 
-![An alternative text if the image does not load]()
+![An alternative text if the image does not load](https://placehold.net/main.svg)
 :::
+
+
 
 This would look like this:
 
