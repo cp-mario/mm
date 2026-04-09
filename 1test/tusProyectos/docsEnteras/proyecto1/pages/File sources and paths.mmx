@@ -2,6 +2,6 @@
 
 ## Images, videos, audios, inline images and code from files
 
-All of this have the src of the image inside (src) exept the inline image that has it inside <-src->
+All of this have the src of the image inside (src) exept the inline image that has it inside `<-src->`
 
 The source can be a URL like `![A image](https://ThisIsAExampleImage.com/image.png)` or a file from the assets folder `![A image](assets/route/from/assets/image.png)`

@@ -175,14 +175,9 @@ export const PATTERNS = {
       replace: (match, color, content) => {
         return `<div class="coloredText" style="color: ${color};">${content}</div>`;
       }
-    },
-
-    // Inline code: `code`
-    { 
-      regex: /`([^`]+)`/g, 
-      replace: (match, code) => {
-        return `<code class="inline-code">${code}</code>`;
-      }
     }
+
+    // Note: Inline code is now handled separately in parser.js
+    // to prevent MMX patterns inside backticks from being compiled
   ]
 };

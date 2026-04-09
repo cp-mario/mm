@@ -30,10 +30,18 @@ export function mmxToHtml(mmx) {
   // Step 4: Wrap plain text in <p> tags
   result = wrapParagraphs(result);
 
-  // Step 5: Apply inline formatting (this will NOT affect protected code blocks)
+  // Step 4.5: Extract inline code (backticks) BEFORE applying inline patterns
+  // This prevents patterns like bold/italic from being applied inside inline code
+  const extractedInlineCode = extractInlineCode(result);
+  result = extractedInlineCode.html;
+
+  // Step 5: Apply inline formatting (this will NOT affect protected code blocks or inline code)
   for (const { regex, replace } of PATTERNS.inline) {
     result = result.replace(regex, replace);
   }
+
+  // Step 5.5: Restore inline code with proper formatting
+  result = restoreInlineCode(result, extractedInlineCode.inlineBlocks);
 
   // Step 6: Restore protected code blocks (with original unprocessed content)
   result = restoreRawBlocks(result, extracted.blocks);
@@ -332,6 +340,45 @@ function extractRawBlocks(html) {
 function restoreRawBlocks(html, blocks) {
   for (const b of blocks) {
     html = html.replace(b.key, b.value);
+  }
+  return html;
+}
+
+/**
+ * Extracts inline code (backticks) and replaces with placeholders
+ * This prevents patterns like bold/italic from being applied inside code
+ * @param {string} html - HTML content with inline code
+ * @returns {Object} { html, inlineBlocks }
+ */
+function extractInlineCode(html) {
+  const inlineBlocks = [];
+  let i = 0;
+
+  // Match backticks with content: `code`
+  html = html.replace(/`([^`]+)`/g, (match, code) => {
+    const key = `%%INLINE_CODE_${i++}%%`;
+    // Escape the code content to prevent HTML injection
+    const escapedCode = code
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+    const htmlCode = `<code class="inline-code">${escapedCode}</code>`;
+    inlineBlocks.push({ key, value: htmlCode });
+    return key;
+  });
+
+  return { html, inlineBlocks };
+}
+
+/**
+ * Restores inline code by replacing placeholders with formatted code
+ * @param {string} html - HTML with placeholders
+ * @param {Array} inlineBlocks - Extracted inline code blocks
+ * @returns {string} HTML with restored inline code
+ */
+function restoreInlineCode(html, inlineBlocks) {
+  for (const block of inlineBlocks) {
+    html = html.replace(block.key, block.value);
   }
   return html;
 }
