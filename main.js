@@ -114,7 +114,12 @@ function processProjectStructure(sourceDir, outputDir, options = {}) {
   log(`\nSummary:`);
   log(`Converted: ${stats.processed}`);
   log(`Copied: ${stats.copied}`);
-  log(`Errors: ${stats.errors}`);
+  if (stats.errors >= 1){
+    log(`\x1b[41mErrors: ${stats.errors}\x1b[0m`);
+  }else{
+    console.log("\x1b[42mThere have been no errors\x1b[0m")
+  }
+  
   log(`Process completed\n`);
 }
 
