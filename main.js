@@ -11,6 +11,9 @@ import { parseMCFG } from "./scripts/MCFGParser.js";
 
 const CONFIG = parseMCFG(fs.readFileSync('./config.mcfg', 'utf-8'))
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 /**
  * Recursively scans directory and builds JSON tree for navigation menu
  * @param {string} sourceDir - Directory to scan
@@ -64,8 +67,6 @@ function processProjectStructure(sourceDir, outputDir, options = {}) {
   const stats = { processed: 0, errors: 0, copied: 0 };
 
   // Copy internal assets
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = path.dirname(__filename);
   const assetsInternosSource = path.join(__dirname, "assetsInternos");
 
   if (fs.existsSync(assetsInternosSource)) {
@@ -226,6 +227,17 @@ function applyPathPrefix(html, prefix) {
     .replace(/(path=["'])(assets\/[^"']+)/g, `$1${prefix}$2`);
 }
 
+//If it's single file insert the script in the html else leave it in blank
+let singleFileContent = "";
+if (CONFIG.singleFile) {
+  const scriptPath = path.join(__dirname, "assetsInternos", "script.js");
+  if (fs.existsSync(scriptPath)) {
+    const scriptContent = fs.readFileSync(scriptPath, "utf8");
+    singleFileContent = `<script>${scriptContent}</script>`;
+  }
+}
+
+
 /**
  * Converts single .mmx file to HTML
  * @param {string} inputPath - .mmx input file path
@@ -244,7 +256,8 @@ function convertMmxFile(inputPath, outputPath, outputRoot) {
   
   let finalTemplate = template
     .replaceAll("{{title}}", title)
-    .replaceAll("{{content}}", htmlContent);
+    .replaceAll("{{content}}", htmlContent)
+    .replaceAll("{{singlePageScript}}", singleFileContent);
   
   finalTemplate = applyPathPrefix(finalTemplate, prefix);
 
@@ -286,28 +299,11 @@ function main() {
     });
 
   } else {
-    try {
-      const content = fs.readFileSync(singleInputPath, "utf8");
-      const template = fs.readFileSync("./template.html", "utf8");
-      const htmlContent = mmxToHtml(content);
-
-      const titleMatch = content.match(/^# (.+)$/m);
-      const title = titleMatch ? titleMatch[1] : "Documentation";
-
-      const finalTemplate = template
-        .replaceAll("{{title}}", title)
-        .replaceAll("{{content}}", htmlContent);
-
-      const dir = path.dirname(singleOutputPath);
-      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-
-      fs.writeFileSync(singleOutputPath, finalTemplate, "utf8");
-      console.log(`Generated: ${singleOutputPath}`);
-
-    } catch (error) {
-      console.error("Error:", error.message);
-      process.exit(1);
-    }
+    // Single file mode - ensure output directory exists, then convert
+    const dir = path.dirname(CONFIG.singleOutputPath);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    convertMmxFile(CONFIG.singleInputPath, CONFIG.singleOutputPath, dir);
+    console.log(`Generated: ${CONFIG.singleOutputPath}`);
   }
 }
 

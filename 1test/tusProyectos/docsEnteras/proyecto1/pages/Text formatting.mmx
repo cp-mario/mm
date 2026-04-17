@@ -1,4 +1,4 @@
-# Text formatting  %{Title}%
+# Text formatting
 
 ## Normal writing
 
@@ -34,6 +34,11 @@ It's highly recommended to only use a single h1 and as many as you want h2, h3, 
 :::
 
 You can optionaly put after the header declaration a tag to the header for going to that header with a link
+
+:::note
+Don't put a tag in the first h1 of your page
+:::
+
 :::code
 # This is a h1 with a tag %{tag}%
 ## This is a h2 with a tag %{Anothertag}%
