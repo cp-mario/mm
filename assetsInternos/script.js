@@ -516,7 +516,7 @@ const aundioPlayers = Plyr.setup('audio'); // Audio player controls
 
 
 
-function generateHeaderNavigator() {
+function generateHeaderNavigator(container) {
   const main = document.querySelector('main');
   if (!main) return;
 
@@ -525,9 +525,15 @@ function generateHeaderNavigator() {
   
   if (headers.length === 0) return;
 
-  // Create the navigator container
-  const nav = document.createElement('nav');
-  nav.id = 'header-navigator';
+  // Create the navigator container - use provided container or create new
+  let nav;
+  if (container && container instanceof HTMLElement) {
+    nav = container;
+    nav.innerHTML = ''; // Clear existing content
+  } else {
+    nav = document.createElement('nav');
+    nav.id = 'header-navigator';
+  }
   nav.setAttribute('aria-label', 'Table of contents');
   
   // Add title
@@ -686,13 +692,190 @@ function generateHeaderNavigator() {
 }
 
 // Run the header navigator on desktop
-if (window.innerWidth >= 1600) {
-  generateHeaderNavigator();
+// Determine threshold based on sidebar state
+function getNavigatorThreshold() {
+  const main = document.querySelector('main');
+  if (!main) return 1600;
+  
+  // Check for sidebarActiva class as the real expanded-sidebar marker
+  const classList = main.classList;
+  const hasActiveClass = classList.contains('sidebarActiva');
+  
+  // Also check computed style - if margin-left is large, sidebar is likely expanded
+  const style = window.getComputedStyle(main);
+  const marginLeft = parseInt(style.marginLeft) || 0;
+  const hasMargin = marginLeft > 100;
+  
+  // If any indicator shows expanded sidebar or screen is large enough, use 1900
+  const isLargeScreen = window.innerWidth >= 1900;
+  
+  return (hasActiveClass || hasMargin || isLargeScreen) ? 1900 : 1600;
 }
 
-// Also run when resizing to desktop
-window.addEventListener('resize', () => {
-  if (window.innerWidth >= 1600 && !document.getElementById('header-navigator')) {
-    generateHeaderNavigator();
+// Set body data attribute for CSS to use
+function updateSidebarState() {
+  const main = document.querySelector('main');
+  if (!main) {
+    document.body.setAttribute('data-sidebar', 'inactive');
+    return;
   }
-});
+  
+  // Check the same things as getNavigatorThreshold for consistency
+  const classList = main.classList;
+  const hasActiveClass = classList.contains('sidebarActiva');
+  
+  // Also check computed style
+  const style = window.getComputedStyle(main);
+  const marginLeft = parseInt(style.marginLeft) || 0;
+  const hasMargin = marginLeft > 100;
+  
+  // If any indicator shows expanded sidebar, mark as active
+  if (hasActiveClass || hasMargin) {
+    document.body.setAttribute('data-sidebar', 'active');
+  } else {
+    document.body.setAttribute('data-sidebar', 'inactive');
+  }
+}
+
+// Update navigator and button based on current state
+function updateHeaderNavigatorState() {
+  const threshold = getNavigatorThreshold();
+  const navigator = document.getElementById('header-navigator');
+  const toggleBtn = document.getElementById('header-navigator-toggle');
+  
+  if (window.innerWidth >= threshold) {
+    // Show navigator, hide button
+    if (!navigator && typeof generateHeaderNavigator === 'function') {
+      generateHeaderNavigator();
+    }
+    if (toggleBtn) {
+      removeHeaderNavigatorToggle();
+    }
+  } else {
+    // Show button, remove navigator
+    if (navigator) navigator.remove();
+    setupHeaderNavigatorToggle();
+  }
+  updateSidebarState();
+}
+
+// Run on load - after DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', updateHeaderNavigatorState);
+} else {
+  updateHeaderNavigatorState();
+}
+
+// Also run after delays to ensure any dynamic classes are applied
+setTimeout(updateHeaderNavigatorState, 100);
+setTimeout(updateHeaderNavigatorState, 500);
+
+// Watch for dynamic class changes on main (sidebar toggling)
+const mainElement = document.querySelector('main');
+if (mainElement) {
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+        updateHeaderNavigatorState();
+      }
+    });
+  });
+  observer.observe(mainElement, { attributes: true });
+}
+
+// Handle window resize
+window.addEventListener('resize', updateHeaderNavigatorState);
+
+// ============================================================================
+// Header Navigator Toggle Button for smaller screens
+// ============================================================================
+
+/**
+ * Remove toggle button and dropdown when screen becomes large
+ */
+function removeHeaderNavigatorToggle() {
+  const toggleBtn = document.getElementById('header-navigator-toggle');
+  const dropdown = document.getElementById('header-navigator-dropdown');
+  if (toggleBtn) toggleBtn.remove();
+  if (dropdown) dropdown.remove();
+}
+
+/**
+ * Create toggle button and dropdown for screens smaller than 1900px
+ * The dropdown shows the same content as the desktop navigator
+ */
+function setupHeaderNavigatorToggle() {
+  // Determine threshold based on sidebar state
+  const threshold = getNavigatorThreshold();
+  
+  // Only run on smaller screens than threshold
+  if (window.innerWidth >= threshold) return;
+  
+  // Remove desktop navigator if it exists (wrong size)
+  const desktopNav = document.getElementById('header-navigator');
+  if (desktopNav) desktopNav.remove();
+  
+  // Check if already set up
+  if (document.getElementById('header-navigator-toggle')) return;
+  
+  // Create toggle button
+  const toggleBtn = document.createElement('button');
+  toggleBtn.id = 'header-navigator-toggle';
+  toggleBtn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="4" cy="6" r="1.3" fill="#000000"/><path d="M7 6h14" stroke="#000000" stroke-width="2"/><circle cx="4" cy="12" r="1.3" fill="#000000"/><path d="M7 12h14" stroke="#000000" stroke-width="2"/><circle cx="4" cy="18" r="1.3" fill="#000000"/><path d="M7 18h14" stroke="#000000" stroke-width="2"/></svg>';
+  toggleBtn.setAttribute('aria-label', 'Toggle table of contents');
+  toggleBtn.setAttribute('aria-expanded', 'false');
+  document.body.appendChild(toggleBtn);
+  
+  // Create dropdown container
+  const dropdown = document.createElement('div');
+  dropdown.id = 'header-navigator-dropdown';
+  document.body.appendChild(dropdown);
+  
+  // Always regenerate content for dropdown to ensure click handlers work
+  if (typeof generateHeaderNavigator === 'function') {
+    generateHeaderNavigator(dropdown);
+    // Update the title text
+    const title = dropdown.querySelector('#header-navigator-title');
+    if (title) {
+      title.id = 'header-navigator-dropdown-title';
+      title.textContent = 'On this page';
+    }
+    // Update class for links
+    const links = dropdown.querySelectorAll('a');
+    links.forEach(link => {
+      // Get the level from existing class or tag
+      const match = link.className.match(/nav-h(\d)/);
+      if (match) {
+        link.classList.add('nav-h' + match[1]);
+      }
+    });
+  }
+  
+  // Add click event to toggle dropdown
+  toggleBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isActive = dropdown.classList.toggle('active');
+    toggleBtn.setAttribute('aria-expanded', isActive);
+    toggleBtn.innerHTML = isActive
+      ? '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="m5 5 14 14m0-14L5 19" stroke="#000000" stroke-width="2"/></svg>'
+      : '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="4" cy="6" r="1.3" fill="#000000"/><path d="M7 6h14" stroke="#000000" stroke-width="2"/><circle cx="4" cy="12" r="1.3" fill="#000000"/><path d="M7 12h14" stroke="#000000" stroke-width="2"/><circle cx="4" cy="18" r="1.3" fill="#000000"/><path d="M7 18h14" stroke="#000000" stroke-width="2"/></svg>';
+  });
+  
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!toggleBtn.contains(e.target) && !dropdown.contains(e.target)) {
+      dropdown.classList.remove('active');
+      toggleBtn.setAttribute('aria-expanded', 'false');
+      toggleBtn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="4" cy="6" r="1.3" fill="#000000"/><path d="M7 6h14" stroke="#000000" stroke-width="2"/><circle cx="4" cy="12" r="1.3" fill="#000000"/><path d="M7 12h14" stroke="#000000" stroke-width="2"/><circle cx="4" cy="18" r="1.3" fill="#000000"/><path d="M7 18h14" stroke="#000000" stroke-width="2"/></svg>';
+    }
+  });
+  
+  // Prevent dropdown close when clicking inside dropdown
+  dropdown.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
+}
+
+// Note: Toggle button setup is now handled by updateHeaderNavigatorState()
+// which is called on load and on resize via updateHeaderNavigatorState()
+// No separate setup needed here
