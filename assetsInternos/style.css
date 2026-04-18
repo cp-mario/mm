@@ -433,7 +433,7 @@ th.vertical-title{
     background-color: transparent;
   }
   50% {
-    background-color: orange;
+    background-color: rgba(255, 166, 0, 0.325);
   }
   100% {
     background-color: transparent;
