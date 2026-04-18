@@ -35,7 +35,7 @@ Texto normal que también rompe la lista.
 
 ---
 
-## Listas Ordenadas con Números
+## Listas Ordenadas con Números %{numeros}%
 
 1. Primer ítem numerado
 2. Segundo ítem numerado

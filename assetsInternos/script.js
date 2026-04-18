@@ -507,18 +507,6 @@ function generateHeaderNavigator() {
   headers.forEach((header, index) => {
     // Generate an ID if the header doesn't have one
     let id = header.id;
-    if (!id) {
-      id = 'heading-' + index;
-      // Create a slug from the header text
-      const slug = header.textContent
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/(^-|-$)/g, '');
-      if (slug) {
-        id = slug + '-' + index;
-      }
-      header.id = id;
-    }
 
     // Determine the level for indentation
     const level = header.tagName.toLowerCase(); // 'h1', 'h2', etc.
@@ -531,6 +519,7 @@ function generateHeaderNavigator() {
     a.classList.add('nav-' + level);
     
     // Handle click for smooth scroll
+    let clickTimeout = null;
     a.addEventListener('click', (e) => {
       e.preventDefault();
       const target = document.getElementById(id);
@@ -538,6 +527,23 @@ function generateHeaderNavigator() {
         target.scrollIntoView({ behavior: 'smooth' });
         // Update URL without reload
         history.pushState(null, null, '#' + id);
+        
+        // Clear any pending timeout
+        if (clickTimeout) clearTimeout(clickTimeout);
+        
+        // Ignore scroll-based updates for 1 second
+        ignoreScrollUpdates = true;
+        
+        // Temporary highlight
+        list.querySelectorAll('a').forEach(l => l.classList.remove('active'));
+        a.classList.add('active');
+        
+        // After 1 second, let updateActiveHeader take over
+        clickTimeout = setTimeout(() => {
+          ignoreScrollUpdates = false;
+          a.classList.remove('active');
+          updateActiveHeader();
+        }, 1000);
       }
     });
 
@@ -548,9 +554,15 @@ function generateHeaderNavigator() {
   // Add to body
   document.body.appendChild(nav);
 
+  // Flag to temporarily ignore scroll-based updates (set when user clicks a link)
+  let ignoreScrollUpdates = false;
+
   // Highlight current section on scroll
   // Uses scroll position to determine which header is currently visible
   function updateActiveHeader() {
+    // Skip if user just clicked a link (temporary highlight active)
+    if (ignoreScrollUpdates) return;
+    
     const allLinks = list.querySelectorAll('a');
     if (allLinks.length === 0) return;
     
@@ -558,7 +570,7 @@ function generateHeaderNavigator() {
     const scrollTop = window.scrollY || document.documentElement.scrollTop;
     
     // Find the header that is closest to the top of the viewport
-    // and either above it or just entering it
+    // and either above it or just below it
     let activeLink = null;
     let minDistance = Infinity;
     
@@ -567,16 +579,16 @@ function generateHeaderNavigator() {
       const el = document.getElementById(id);
       if (el) {
         const rect = el.getBoundingClientRect();
-        const offsetTop = rect.top + scrollTop;
         
-        // Calculate distance from top of viewport
-        // If header is above or at the top, use negative distance (already passed)
-        // If header is below, use positive distance
-        const distance = offsetTop - scrollTop;
+        // Use rect.top directly (distance from viewport top)
+        // Negative = above viewport, Positive = below viewport
+        const distance = rect.top;
         
-        // We want the last header that has passed or is at the top
-        // (distance <= 0 means it's above or at the viewport top)
-        if (distance <= 0 && distance > -600) { // Within 1000px above viewport
+        // We want headers that are:
+        // 1. Above the viewport (distance < 0), OR
+        // 2. Just below the viewport top (distance > 0 but < 100)
+        // Both should be close to the top of the viewport
+        if ((distance < 0 && distance > -600) || (distance >= 0 && distance < 100)) {
           if (Math.abs(distance) < minDistance) {
             minDistance = Math.abs(distance);
             activeLink = link;
@@ -585,14 +597,14 @@ function generateHeaderNavigator() {
       }
     });
     
-    // If no header found above, use the first one that's below
+    // If no header found, use the first one that's in the viewport
     if (!activeLink) {
       for (const link of allLinks) {
         const id = link.getAttribute('href').substring(1);
         const el = document.getElementById(id);
         if (el) {
           const rect = el.getBoundingClientRect();
-          if (rect.top > 0) {
+          if (rect.top > 0 && rect.top < window.innerHeight) {
             activeLink = link;
             break;
           }
@@ -600,9 +612,12 @@ function generateHeaderNavigator() {
       }
     }
     
-    // Update active state
+    // Update active state (but preserve user-clicked state)
     list.querySelectorAll('a').forEach(link => {
-      link.classList.remove('active');
+      // Don't remove if user just clicked this link (temporary override)
+      if (!link.classList.contains('user-clicked')) {
+        link.classList.remove('active');
+      }
     });
     
     if (activeLink) {

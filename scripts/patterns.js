@@ -3,54 +3,104 @@
  * Regex patterns for MMX to HTML conversion
  */
 
+// Track used heading IDs for auto-generation with duplicates
+const usedHeadingIds = new Map();
+
+function slugify(text) {
+  return text
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^\w\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+function generateHeadingId(text, explicitId) {
+  if (explicitId) return explicitId;
+  
+  const baseSlug = slugify(text);
+  
+  if (!usedHeadingIds.has(baseSlug)) {
+    usedHeadingIds.set(baseSlug, 1);
+    return baseSlug;
+  }
+  
+  const count = usedHeadingIds.get(baseSlug) + 1;
+  usedHeadingIds.set(baseSlug, count);
+  return `${baseSlug}-${count}`;
+}
+
+export function resetHeadingIdTracker() {
+  usedHeadingIds.clear();
+}
+
 export const PATTERNS = {
   monoline: [
     // Heading level 6: ###### Title %{id}%
     { 
       regex: /^###### (.*?)\s*(?:%\{(.+?)\}%\s*)?$/gm, 
-      replace: (match, text, id) => id 
-        ? `<h6 id="${id}">${text}</h6>` 
-        : `<h6>${text}</h6>`
+      replace: (match, text, id) => {
+        const generatedId = generateHeadingId(text, id);
+        return id 
+          ? `<h6 id="${id}">${text}</h6>` 
+          : `<h6 id="${generatedId}">${text}</h6>`;
+      }
     },
 
     // Heading level 5: ##### Title %{id}%
     { 
       regex: /^##### (.*?)\s*(?:%\{(.+?)\}%\s*)?$/gm, 
-      replace: (match, text, id) => id 
-        ? `<h5 id="${id}">${text}</h5>` 
-        : `<h5>${text}</h5>`
+      replace: (match, text, id) => {
+        const generatedId = generateHeadingId(text, id);
+        return id 
+          ? `<h5 id="${id}">${text}</h5>` 
+          : `<h5 id="${generatedId}">${text}</h5>`;
+      }
     },
 
     // Heading level 4: #### Title %{id}%
     { 
       regex: /^#### (.*?)\s*(?:%\{(.+?)\}%\s*)?$/gm, 
-      replace: (match, text, id) => id 
-        ? `<h4 id="${id}">${text}</h4>` 
-        : `<h4>${text}</h4>`
+      replace: (match, text, id) => {
+        const generatedId = generateHeadingId(text, id);
+        return id 
+          ? `<h4 id="${id}">${text}</h4>` 
+          : `<h4 id="${generatedId}">${text}</h4>`;
+      }
     },
 
     // Heading level 3: ### Title %{id}%
     { 
       regex: /^### (.*?)\s*(?:%\{(.+?)\}%\s*)?$/gm, 
-      replace: (match, text, id) => id 
-        ? `<h3 id="${id}">${text}</h3>` 
-        : `<h3>${text}</h3>`
+      replace: (match, text, id) => {
+        const generatedId = generateHeadingId(text, id);
+        return id 
+          ? `<h3 id="${id}">${text}</h3>` 
+          : `<h3 id="${generatedId}">${text}</h3>`;
+      }
     },
 
     // Heading level 2: ## Title %{id}%
     { 
       regex: /^## (.*?)\s*(?:%\{(.+?)\}%\s*)?$/gm, 
-      replace: (match, text, id) => id 
-        ? `<h2 id="${id}">${text}</h2>` 
-        : `<h2>${text}</h2>`
+      replace: (match, text, id) => {
+        const generatedId = generateHeadingId(text, id);
+        return id 
+          ? `<h2 id="${id}">${text}</h2>` 
+          : `<h2 id="${generatedId}">${text}</h2>`;
+      }
     },
 
     // Heading level 1: # Title %{id}%
     { 
       regex: /^# (.*?)\s*(?:%\{(.+?)\}%\s*)?$/gm, 
-      replace: (match, text, id) => id 
-        ? `<h1 id="${id}">${text}</h1>` 
-        : `<h1>${text}</h1>`
+      replace: (match, text, id) => {
+        const generatedId = generateHeadingId(text, id);
+        return id 
+          ? `<h1 id="${id}">${text}</h1>` 
+          : `<h1 id="${generatedId}">${text}</h1>`;
+      }
     },
 
     // Hard break: #b
