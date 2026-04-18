@@ -682,13 +682,6 @@ function generateHeaderNavigator() {
   
   // Initial update
   updateActiveHeader();
-
-  // Observe all headers
-  headers.forEach((header) => {
-    if (header.id) {
-      observer.observe(header);
-    }
-  });
 }
 
 // Run the header navigator on desktop

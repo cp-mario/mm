@@ -8,6 +8,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { mmxToHtml } from "./scripts/parser.js";
 import { parseMCFG } from "./scripts/MCFGParser.js";
+import { minifyJs } from "./scripts/minifyJs.js";
 
 const CONFIG = parseMCFG(fs.readFileSync('./config.mcfg', 'utf-8'))
 
@@ -114,6 +115,7 @@ function processProjectStructure(sourceDir, outputDir, options = {}) {
   log(`\nSummary:`);
   log(`Converted: ${stats.processed}`);
   log(`Copied: ${stats.copied}`);
+  log(`Minified scripts: ${CONFIG.minifyScripts}`)
   if (stats.errors >= 1){
     log(`\x1b[41mErrors: ${stats.errors}\x1b[0m`);
   }else{
@@ -140,6 +142,11 @@ function copyDirectoryRecursive(source, destination) {
     
     if (stat.isDirectory()) {
       copyDirectoryRecursive(srcPath, destPath);
+    } else if (item.endsWith('.js') && CONFIG.minifyScripts) {
+      // Minify JS files
+      const original = fs.readFileSync(srcPath, 'utf-8');
+      const minified = minifyJs(original);
+      fs.writeFileSync(destPath, minified, 'utf-8');
     } else {
       fs.copyFileSync(srcPath, destPath);
     }

@@ -19,3 +19,7 @@ outputPath = "./1test/output/docsEnteras/proyecto1"
 #Converts a SINGLE .mmx file to HTML
 singleInputPath = "./1test/tusProyectos/archivosUnicos/pruebaUnica.mmx"
 singleOutputPath = "./1test/output/archivosUnicos/pruebaUnica.html"
+
+#If true, minifies the scripts before copying them to the output
+#If you dont know what this does keep it true
+minifyScripts = true
