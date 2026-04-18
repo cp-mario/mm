@@ -270,24 +270,6 @@ fetch(prefix + "assetsInternos/sidebar.html")
         }
 
         /**
-         * SAVE AND RESTORE SCROLL POSITION
-         * Remembers where the user was scrolled in the sidebar
-         * Useful for long navigation menus
-         */
-        const tree = document.getElementById("sidebar-menu");
-
-        // Restore scroll position on page load
-        const savedScroll = sessionStorage.getItem("sidebar-menu");
-        if (savedScroll !== null) {
-          tree.scrollTop = parseInt(savedScroll, 10);
-        }
-
-        // Save scroll position in real-time as user scrolls
-        tree.addEventListener("scroll", () => {
-          sessionStorage.setItem("sidebar-menu", tree.scrollTop);
-        });
-
-        /**
          * TOGGLE FOLDER EXPANDED/COLLAPSED
          * Click handler for the folder header
          */
@@ -309,6 +291,25 @@ fetch(prefix + "assetsInternos/sidebar.html")
 
     // Render all top-level nodes into the menu
     ordered.forEach(node => renderNode(node, menu));
+
+    /**
+     * SAVE AND RESTORE SCROLL POSITION
+     * Remembers where the user was scrolled in the sidebar
+     * Useful for long navigation menus
+     * This is set up once outside the render loop for efficiency
+     */
+    const tree = document.getElementById("sidebar-menu");
+
+    // Restore scroll position on page load
+    const savedScroll = sessionStorage.getItem("sidebar-menu");
+    if (savedScroll !== null) {
+      tree.scrollTop = parseInt(savedScroll, 10);
+    }
+
+    // Save scroll position in real-time as user scrolls
+    tree.addEventListener("scroll", () => {
+      sessionStorage.setItem("sidebar-menu", tree.scrollTop);
+    });
 
     /**
      * HIGHLIGHT CURRENT PAGE
