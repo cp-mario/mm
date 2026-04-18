@@ -474,7 +474,7 @@ th.vertical-title{
   display: none;
   position: fixed;
   right: 10px;
-  top: 50px;
+  top: 32px;
   width: 250px;
   max-height: calc(100vh - 70px);
   overflow-y: auto;
