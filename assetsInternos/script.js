@@ -44,6 +44,23 @@ const iconCollapse = `
   <line x1="10" y1="16" x2="22" y2="16" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
 </svg>`;
 
+
+const navigatorButton = `
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+  <circle cx="4" cy="6" r="1.3" fill="#000"/>
+  <path d="M7 6h14" stroke="#000" stroke-width="2"/>
+  <circle cx="4" cy="12" r="1.3" fill="#000"/>
+  <path d="M7 12h14" stroke="#000" stroke-width="2"/>
+  <circle cx="4" cy="18" r="1.3" fill="#000"/>
+  <path d="M7 18h14" stroke="#000" stroke-width="2"/>
+</svg>`;
+
+
+const navigatorButtonClose = `
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+  <path d="m5 5 14 14m0-14L5 19" stroke="#000" stroke-width="2"/>
+</svg>`;
+
 /**
  * Global variable to store the project name
  * Loaded from config.json and used in the sidebar title
@@ -821,7 +838,7 @@ function setupHeaderNavigatorToggle() {
   // Create toggle button
   const toggleBtn = document.createElement('button');
   toggleBtn.id = 'header-navigator-toggle';
-  toggleBtn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="4" cy="6" r="1.3" fill="#000000"/><path d="M7 6h14" stroke="#000000" stroke-width="2"/><circle cx="4" cy="12" r="1.3" fill="#000000"/><path d="M7 12h14" stroke="#000000" stroke-width="2"/><circle cx="4" cy="18" r="1.3" fill="#000000"/><path d="M7 18h14" stroke="#000000" stroke-width="2"/></svg>';
+  toggleBtn.innerHTML = navigatorButton;
   toggleBtn.setAttribute('aria-label', 'Toggle table of contents');
   toggleBtn.setAttribute('aria-expanded', 'false');
   document.body.appendChild(toggleBtn);
@@ -857,8 +874,8 @@ function setupHeaderNavigatorToggle() {
     const isActive = dropdown.classList.toggle('active');
     toggleBtn.setAttribute('aria-expanded', isActive);
     toggleBtn.innerHTML = isActive
-      ? '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="m5 5 14 14m0-14L5 19" stroke="#000000" stroke-width="2"/></svg>'
-      : '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="4" cy="6" r="1.3" fill="#000000"/><path d="M7 6h14" stroke="#000000" stroke-width="2"/><circle cx="4" cy="12" r="1.3" fill="#000000"/><path d="M7 12h14" stroke="#000000" stroke-width="2"/><circle cx="4" cy="18" r="1.3" fill="#000000"/><path d="M7 18h14" stroke="#000000" stroke-width="2"/></svg>';
+      ? navigatorButtonClose
+      : navigatorButton;
   });
   
   // Close dropdown when clicking outside
@@ -866,7 +883,7 @@ function setupHeaderNavigatorToggle() {
     if (!toggleBtn.contains(e.target) && !dropdown.contains(e.target)) {
       dropdown.classList.remove('active');
       toggleBtn.setAttribute('aria-expanded', 'false');
-      toggleBtn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="4" cy="6" r="1.3" fill="#000000"/><path d="M7 6h14" stroke="#000000" stroke-width="2"/><circle cx="4" cy="12" r="1.3" fill="#000000"/><path d="M7 12h14" stroke="#000000" stroke-width="2"/><circle cx="4" cy="18" r="1.3" fill="#000000"/><path d="M7 18h14" stroke="#000000" stroke-width="2"/></svg>';
+      toggleBtn.innerHTML = navigatorButton;
     }
   });
   
