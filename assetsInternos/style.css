@@ -319,3 +319,106 @@ th.vertical-title , th.horizontal-title {
 th.vertical-title{
     width: 20%;
 }
+
+/* Right-side header navigator (Table of Contents) - visible only on wide screens */
+#header-navigator {
+  display: none;
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 250px;
+  height: 100%;
+  overflow-y: auto;
+  padding: 20px 15px;
+  padding-bottom: 50px;
+  font-family: "Lato", sans-serif;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,0.35) transparent;
+}
+
+#header-navigator::-webkit-scrollbar {
+  width: 8px;
+}
+
+#header-navigator::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#header-navigator::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.35);
+  border-radius: 4px;
+}
+
+#header-navigator-title {
+  font-size: 14px;
+  font-weight: bold;
+  color: #283143;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #a7a7a7;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+#header-navigator ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#header-navigator li {
+  margin: 4px 0;
+}
+
+#header-navigator a {
+  display: block;
+  color: #5474a9;
+  text-decoration: none;
+  font-size: 13px;
+  padding: 3px 8px;
+  border-radius: 3px;
+  transition: background-color 0.2s, color 0.2s;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#header-navigator a:hover {
+  background-color: #e8eef5;
+  color: #283143;
+}
+
+#header-navigator a.active {
+  background-color: #d4e3f5;
+  color: #283143;
+  font-weight: 600;
+}
+
+/* Indent levels for h2, h3 */
+#header-navigator .nav-h2 {
+  padding-left: 20px;
+}
+
+#header-navigator .nav-h3 {
+  padding-left: 30px;
+}
+
+#header-navigator .nav-h4 {
+  padding-left: 40px;
+}
+
+#header-navigator .nav-h5 {
+  padding-left: 50px;
+}
+
+#header-navigator .nav-h6 {
+  padding-left: 60px;
+}
+
+/* Show navigator only on wider screens*/
+@media (min-width: 1900px) {
+  #header-navigator {
+    display: block;
+  }
+}
