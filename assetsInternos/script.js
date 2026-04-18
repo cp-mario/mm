@@ -65,6 +65,35 @@ fetch(prefix + "config.json")
   });
 
 // ============================================================================
+// STEP 1B: Highlight target heading on page load (if URL has hash)
+// ============================================================================
+/**
+ * When the page loads with a hash in the URL (e.g., page.html#section),
+ * add the .resaltado class to trigger the animation
+ */
+function highlightOnLoad() {
+  const hash = window.location.hash.slice(1); // Remove the # from the hash
+  if (!hash) return;
+  
+  const target = document.getElementById(hash);
+  if (target) {
+    target.classList.add("resaltado");
+    
+    // Remove the class after animation completes so it can be re-triggered by clicks
+    setTimeout(() => {
+      target.classList.remove("resaltado");
+    }, 1500);
+  }
+}
+
+// Run on page load
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", highlightOnLoad);
+} else {
+  highlightOnLoad();
+}
+
+// ============================================================================
 // STEP 2: Load favicon - Project icon detection and loading
 // ============================================================================
 /**
@@ -479,6 +508,13 @@ const aundioPlayers = Plyr.setup('audio'); // Audio player controls
  * Shows all headers (h1-h6) from the main content
  * Only visible on PC (desktop) with sufficient screen width
  */
+
+
+
+
+
+
+
 function generateHeaderNavigator() {
   const main = document.querySelector('main');
   if (!main) return;
@@ -534,7 +570,19 @@ function generateHeaderNavigator() {
         // Ignore scroll-based updates for 1 second
         ignoreScrollUpdates = true;
         
-        // Temporary highlight
+        // Remove existing highlights first
+        document.querySelectorAll(".resaltado").forEach((element) => 
+          element.classList.remove("resaltado")
+        );
+
+        // Use setTimeout to force browser to recognize class removal before re-adding
+        // This allows the animation to re-trigger on subsequent clicks
+        setTimeout(() => {
+          target.classList.add("resaltado");
+        }, 10);
+
+        
+        // Temporary highlight for nav link
         list.querySelectorAll('a').forEach(l => l.classList.remove('active'));
         a.classList.add('active');
         

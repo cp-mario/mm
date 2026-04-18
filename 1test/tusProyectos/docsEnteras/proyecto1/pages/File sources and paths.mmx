@@ -1,6 +1,6 @@
 # File sources and paths
 
-## Images, videos, audios, inline images and code from files
+## Images, videos, audios, inline images and code from files %{header2}%
 
 All of this have the src of the image inside (src) except the inline image that has it inside `<-src->`
 

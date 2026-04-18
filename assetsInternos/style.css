@@ -423,12 +423,10 @@ th.vertical-title{
   }
 }
 
-
-/* :target highlight - works when URL has #id matching element */
-h1:target, h2:target, h3:target, h4:target, h5:target, h6:target {
-  color: #007bff;
-  animation: fadeInOutResaltado 1.5s ease-in-out 1;
+.resaltado{
+    animation: fadeInOutResaltado 1.5s ease-in-out 1;
 }
+
 
 @keyframes fadeInOutResaltado {
   0% {

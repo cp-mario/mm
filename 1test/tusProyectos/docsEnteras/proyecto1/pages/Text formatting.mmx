@@ -175,4 +175,4 @@ Basic sintax:
 some text [External page(it opens in another tab)](https://example.com) some text
 [Documentation page (it opens in this tab)](pages/Multimedia/Audios.html)
 [Header(it scrolls the content to the header)](#Title) 
-[Documentation page header (it opens in this tab)](pages/Multimedia/Images.html#Title)
+[File sources and paths h2 (it opens in this tab)](pages/File sources and paths.html#header2)
