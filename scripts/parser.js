@@ -30,7 +30,10 @@ export function mmxToHtml(mmx) {
     result = result.replace(regex, replace);
   }
 
-  // Step 4: Wrap plain text in <p> tags
+  // Step 4: Parse Markdown-style lists before wrapping text
+  result = parseLists(result);
+
+  // Step 5: Wrap plain text in <p> tags
   result = wrapParagraphs(result);
 
   // Step 5: Extract inline code (backticks) BEFORE applying inline patterns
@@ -258,6 +261,117 @@ function parseMultilineBlocks(text, config) {
     }
   }
 
+  return output.join('\n');
+}
+
+/**
+ * Parses Markdown-style lists (-, +, n., with optional indentation levels)
+ * @param {string} text - Text with potential list items
+ * @returns {string} HTML with parsed lists
+ */
+function parseLists(text) {
+  const lines = text.split('\n').map(l => l.trimEnd());
+  const output = [];
+  const stack = [];
+  let listCount = 0;
+
+  const parseListItem = (line) => {
+    // Pattern: - text (unordered, optional level number before flexible whitespace)
+    const ulMatch = /^-(\d*)\s+(.+)$/.exec(line);
+    if (ulMatch) {
+      return {
+        type: 'ul',
+        level: ulMatch[1] ? Number(ulMatch[1]) : 0,
+        start: null,
+        content: ulMatch[2],
+      };
+    }
+
+    // Pattern: + text (ordered with +, optional level number before flexible whitespace)
+    const olPlusMatch = /^\+(\d*)\s+(.+)$/.exec(line);
+    if (olPlusMatch) {
+      return {
+        type: 'ol',
+        level: olPlusMatch[1] ? Number(olPlusMatch[1]) : 0,
+        start: null,
+        content: olPlusMatch[2],
+      };
+    }
+
+    // Pattern: n.m text (ordered numbered with level)
+    const olNumLevelMatch = /^(\d+)\.(\d+)\s+(.+)$/.exec(line);
+    if (olNumLevelMatch) {
+      return {
+        type: 'ol',
+        level: Number(olNumLevelMatch[2]),
+        start: Number(olNumLevelMatch[1]),
+        content: olNumLevelMatch[3],
+      };
+    }
+
+    // Pattern: n. text (ordered numbered, no level)
+    const olNumMatch = /^(\d+)\.\s+(.+)$/.exec(line);
+    if (olNumMatch) {
+      return {
+        type: 'ol',
+        level: 0,
+        start: Number(olNumMatch[1]),
+        content: olNumMatch[2],
+      };
+    }
+
+    return null;
+  };
+
+  const closeList = () => {
+    const current = stack.pop();
+    if (current?.itemOpen) output.push('</li>');
+    if (current) output.push(`</${current.type}>`);
+  };
+
+  const closeUntilLevel = (targetLevel, targetType) => {
+    while (stack.length > 0 && stack[stack.length - 1].level > targetLevel) {
+      closeList();
+    }
+    if (stack.length > 0 && stack[stack.length - 1].level === targetLevel && stack[stack.length - 1].type !== targetType) {
+      closeList();
+    }
+  };
+
+  const openList = (type, start, level) => {
+    const attrs = start && start !== 1 ? ` start="${start}"` : '';
+    output.push(`<${type}${attrs}>`);
+    stack.push({ type, level, start, itemOpen: false });
+  };
+
+  const addItem = (item) => {
+    listCount++;
+    closeUntilLevel(item.level, item.type);
+
+    if (!stack.length || stack[stack.length - 1].level < item.level) {
+      const parentLevel = stack.length ? stack[stack.length - 1].level : -1;
+      for (let lv = parentLevel + 1; lv <= item.level; lv += 1) {
+        openList(item.type, lv === item.level ? item.start : null, lv);
+      }
+    }
+
+    const current = stack[stack.length - 1];
+    if (current?.itemOpen) output.push('</li>');
+    current.itemOpen = true;
+    output.push(`<li>${item.content}`);
+  };
+
+  for (const line of lines) {
+    const item = parseListItem(line);
+    if (!item) {
+      while (stack.length) closeList();
+      output.push(line);
+    } else {
+      addItem(item);
+    }
+  }
+
+  while (stack.length) closeList();
   return output.join('\n');
 }
 

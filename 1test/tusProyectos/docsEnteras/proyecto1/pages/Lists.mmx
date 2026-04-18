@@ -1,0 +1,94 @@
+# Lists
+
+## Unordered lists
+To create a unordered list use
+:::code
+- item
+- item
+-1 item with 1 tab
+-2 item with 2 tab
+-2 item with 2 tab
+-1 item with 1 tab
+- item
+:::
+
+Result:
+
+- item
+- item
+-1 item with 1 tab
+-2 item with 2 tab
+-2 item with 2 tab
+-1 item with 1 tab
+- item
+
+## Ordered lists
+To create a unordered with automatic numbers list use
+:::code
++ item
++ item
++1 item with 1 tab
++2 item with 2 tab
++2 item with 2 tab
++1 item with 1 tab
++ item
+:::
+
+Result:
+
++ item
++ item
++1 item with 1 tab
++2 item with 2 tab
++2 item with 2 tab
++1 item with 1 tab
++ item
+
+
+To create a unordered with manual numbers list use
+:::code
+1. item
+2. item
+3.1 item with 1 tab
+4.2 item with 2 tab
+5.2 item with 2 tab
+6.1 item with 1 tab
+7 item
+:::
+
+Result:
+
++    item
++ item
++1 item with 1 tab
++2 item with 2 tab
++2 item with 2 tab
++1 item with 1 tab
++ item
+
+Or you can mix them
+:::code
++ item
+5. item //this will not work because the start from another number only works at the start of the list
+9.1 item with 1 tab
++2 item with 2 tab
++2 item with 2 tab
++1 item with 1 tab
+10. item
+:::
+
+Result:
+
++ item
+5. item
+9.1 item with 1 tab
++2 item with 2 tab
++2 item with 2 tab
++1 item with 1 tab
+10. item
+
+
+
+:::note
+In all types of list it can be as much spaces or tabs as you want to organise betwen te list element (+,-,1,1.2...) and the text
+:::
