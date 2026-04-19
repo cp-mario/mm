@@ -77,11 +77,26 @@ function processProjectStructure(sourceDir, outputDir, options = {}) {
     log(`assetsInternos/ copied`);
   }
 
+  // Copy MCFGParser.js to assetsInternos (minified or not based on config)
+  // Remove 'export' so it's a normal function in the browser
+  const mcfgParserSource = path.join(__dirname, "scripts", "MCFGParser.js");
+  const mcfgParserDest = path.join(outputDir, "assetsInternos", "MCFGParser.js");
+  if (fs.existsSync(mcfgParserSource)) {
+    let parserContent = fs.readFileSync(mcfgParserSource, 'utf-8');
+    // Remove export keyword to make it a regular function
+    parserContent = parserContent.replace(/export\s+(function|const|let|var)/g, '$1');
+    if (CONFIG.minifyScripts) {
+      parserContent = minifyJs(parserContent);
+    }
+    fs.writeFileSync(mcfgParserDest, parserContent, 'utf-8');
+    log(`MCFGParser.js copied${CONFIG.minifyScripts ? ' (minified)' : ''}`);
+  }
+
   // Copy project config
-  const configSource = path.join(sourceDir, 'config.json');
+  const configSource = path.join(sourceDir, 'config.mcfg');
   if (fs.existsSync(configSource)) {
-    fs.copyFileSync(configSource, path.join(outputDir, 'config.json'));
-    log(`config.json copied`);
+    fs.copyFileSync(configSource, path.join(outputDir, 'config.mcfg'));
+    log(`config.mcfg copied`);
   }
 
   // Copy project assets

@@ -17,6 +17,8 @@
  * - medium-zoom - Image zoom on click
  */
 
+
+
 // ============================================================================
 // SIDEBAR ICONS - SVG elements for folder expand/collapse
 // ============================================================================
@@ -75,10 +77,13 @@ let nombreProyecto;
  * The config file contains project title, author, and other settings
  * This allows customization without modifying code
  */
-fetch(prefix + "config.json")
-  .then(res => res.json())
-  .then(data => {
-    nombreProyecto = data.project.title; // Extract project title for sidebar
+
+//data.version is a string with the version TODO: Show it somewere
+fetch(prefix + "config.mcfg")
+  .then(res => res.text())
+  .then(text => {
+    const data = parseMCFG(text);
+    nombreProyecto = data.title;
   });
 
 // ============================================================================
