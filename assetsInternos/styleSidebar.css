@@ -92,7 +92,7 @@
   font-family: "Archivo Black", sans-serif;
 }
 
-#sidebar a, #sidebar a:visited, #sidebar a:active {
+#sidebar a, #sidebar a:visited, #sidebar {
   color: #5474a9;
   text-decoration: none;
 }
@@ -161,4 +161,9 @@ desde script.js al main) */
   padding: 10px;
   text-align: right;
   font-family: "JetBrains Mono", monospace;
+}
+
+
+.active {
+  color: #0073d7 !important;
 }

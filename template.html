@@ -54,9 +54,9 @@
     </style>
     <script>
       const cacheBust = Date.now();
-      const p = window.location.pathname;
-      const i = p.indexOf("/pages/");
-      const prefix = i === -1 ? "" : "../".repeat(p.slice(i + 7).split("/").filter(x => x).length); 
+      const path = window.location.pathname;
+      const i = path.indexOf("/pages/");
+      const prefix = i === -1 ? "" : "../".repeat(path.slice(i + 7).split("/").filter(x => x).length); 
         
       // Cargar script.js
       const script = document.createElement("script");
