@@ -8,17 +8,13 @@ To make the documentation work, your project must contain the following structur
 
 ## **Required files and folders**
 
-### `config.json` (required)  
+### `config.mcfg` (required)  
 Placed in the root of your project.  
 It must contain:
 
 ```json
-{
-    "project": {
-        "title": "Your project name",
-        "version": "1.0"
-    }
-}
+title = "The title of your documentation"
+version = "v1.1(The version)"
 ```
 
 ### `assets/` (optional)  
