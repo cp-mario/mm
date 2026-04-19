@@ -533,6 +533,13 @@ const aundioPlayers = Plyr.setup('audio'); // Audio player controls
 
 
 
+// ============================================================================
+// Global state for Header Navigator (right sidebar) - to fix race conditions
+// ============================================================================
+let navigatorClickTimeout = null;       // Track current click timeout to clear it on rapid clicks
+let navigatorIgnoreScrollUpdates = false;  // Flag to temporarily ignore scroll updates
+let navigatorLastHighlighted = null; // Track last element with .resaltado class
+
 function generateHeaderNavigator(container) {
   const main = document.querySelector('main');
   if (!main) return;
@@ -579,7 +586,6 @@ function generateHeaderNavigator(container) {
     a.classList.add('nav-' + level);
     
     // Handle click for smooth scroll
-    let clickTimeout = null;
     a.addEventListener('click', (e) => {
       e.preventDefault();
       const target = document.getElementById(id);
@@ -588,13 +594,22 @@ function generateHeaderNavigator(container) {
         // Update URL without reload
         history.pushState(null, null, '#' + id);
         
-        // Clear any pending timeout
-        if (clickTimeout) clearTimeout(clickTimeout);
+        // Clear any pending timeout from previous clicks - FIX for race condition
+        if (navigatorClickTimeout) {
+          clearTimeout(navigatorClickTimeout);
+          navigatorClickTimeout = null;
+        }
         
-        // Ignore scroll-based updates for 1 second
-        ignoreScrollUpdates = true;
+        // Set flag to ignore scroll-based updates for 1 second
+        navigatorIgnoreScrollUpdates = true;
         
-        // Remove existing highlights first
+        // Clear highlight from previous element first
+        if (navigatorLastHighlighted) {
+          navigatorLastHighlighted.classList.remove("resaltado");
+          navigatorLastHighlighted = null;
+        }
+        
+        // Also clear any existing .resaltado from other elements in DOM
         document.querySelectorAll(".resaltado").forEach((element) => 
           element.classList.remove("resaltado")
         );
@@ -603,6 +618,7 @@ function generateHeaderNavigator(container) {
         // This allows the animation to re-trigger on subsequent clicks
         setTimeout(() => {
           target.classList.add("resaltado");
+          navigatorLastHighlighted = target;
         }, 10);
 
         
@@ -610,10 +626,12 @@ function generateHeaderNavigator(container) {
         list.querySelectorAll('a').forEach(l => l.classList.remove('active'));
         a.classList.add('active');
         
-        // After 1 second, let updateActiveHeader take over
-        clickTimeout = setTimeout(() => {
-          ignoreScrollUpdates = false;
+        // After 1 second, let updateActiveHeader take over - store timeout globally
+        navigatorClickTimeout = setTimeout(() => {
+          navigatorIgnoreScrollUpdates = false;
           a.classList.remove('active');
+          navigatorClickTimeout = null;
+          navigatorLastHighlighted = null;
           updateActiveHeader();
         }, 1000);
       }
@@ -626,14 +644,12 @@ function generateHeaderNavigator(container) {
   // Add to body
   document.body.appendChild(nav);
 
-  // Flag to temporarily ignore scroll-based updates (set when user clicks a link)
-  let ignoreScrollUpdates = false;
-
   // Highlight current section on scroll
   // Uses scroll position to determine which header is currently visible
   function updateActiveHeader() {
     // Skip if user just clicked a link (temporary highlight active)
-    if (ignoreScrollUpdates) return;
+    // Use global variable to fix race conditions with rapid clicks
+    if (navigatorIgnoreScrollUpdates) return;
     
     const allLinks = list.querySelectorAll('a');
     if (allLinks.length === 0) return;
