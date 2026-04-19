@@ -12,7 +12,7 @@ To make the documentation work, your project must contain the following structur
 Placed in the root of your project.  
 It must contain:
 
-```json
+```ini
 title = "The title of your documentation"
 version = "v1.1(The version)"
 ```
