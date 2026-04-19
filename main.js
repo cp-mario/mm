@@ -70,26 +70,66 @@ function processProjectStructure(sourceDir, outputDir, options = {}) {
 
   // Copy internal assets
   const assetsInternosSource = path.join(__dirname, "assetsInternos");
+  const assetsInternosDest = path.join(outputDir, "assetsInternos");
 
   if (fs.existsSync(assetsInternosSource)) {
-    const assetsInternosDest = path.join(outputDir, "assetsInternos");
-    copyDirectoryRecursive(assetsInternosSource, assetsInternosDest);
-    log(`assetsInternos/ copied`);
-  }
-
-  // Copy MCFGParser.js to assetsInternos (minified or not based on config)
-  // Remove 'export' so it's a normal function in the browser
-  const mcfgParserSource = path.join(__dirname, "scripts", "MCFGParser.js");
-  const mcfgParserDest = path.join(outputDir, "assetsInternos", "MCFGParser.js");
-  if (fs.existsSync(mcfgParserSource)) {
-    let parserContent = fs.readFileSync(mcfgParserSource, 'utf-8');
-    // Remove export keyword to make it a regular function
-    parserContent = parserContent.replace(/export\s+(function|const|let|var)/g, '$1');
-    if (CONFIG.minifyScripts) {
-      parserContent = minifyJs(parserContent);
+    // Insert MCFGParser into script.js at runtime
+    const scriptJsSource = path.join(assetsInternosSource, "script.js");
+    const mcfgParserSource = path.join(__dirname, "scripts", "MCFGParser.js");
+    
+    if (fs.existsSync(scriptJsSource) && fs.existsSync(mcfgParserSource)) {
+      let scriptContent = fs.readFileSync(scriptJsSource, 'utf-8');
+      let parserContent = fs.readFileSync(mcfgParserSource, 'utf-8');
+      
+      // Remove export keyword from MCFGParser
+      parserContent = parserContent.replace(/export\s+(function|const|let|var)/g, '$1');
+      
+      // Extract just the function/mcgparser content (remove comments at the start)
+      const functionMatch = parserContent.match(/\/\*\*[\s\S]*?\*\/\s*(function\s+parseMCFG\([\s\S]*?)$/);
+      if (functionMatch) {
+        parserContent = functionMatch[1];
+      }
+      
+      // Insert at //MCFGParser line
+      scriptContent = scriptContent.replace('//MCFGParser', parserContent);
+      
+      // Then minify if configured
+      if (CONFIG.minifyScripts) {
+        scriptContent = minifyJs(scriptContent);
+      }
+      
+      // Write the modified script.js
+      if (!fs.existsSync(assetsInternosDest)) {
+        fs.mkdirSync(assetsInternosDest, { recursive: true });
+      }
+      fs.writeFileSync(path.join(assetsInternosDest, "script.js"), scriptContent, 'utf-8');
+      log(`script.js copied${CONFIG.minifyScripts ? ' (minified)' : ''}`);
     }
-    fs.writeFileSync(mcfgParserDest, parserContent, 'utf-8');
-    log(`MCFGParser.js copied${CONFIG.minifyScripts ? ' (minified)' : ''}`);
+    
+    // Copy rest of assetsInternos (excluding script.js which we handled)
+    const items = fs.readdirSync(assetsInternosSource);
+    for (const item of items) {
+      if (item === 'script.js') continue; // Already handled
+      
+      const srcPath = path.join(assetsInternosSource, item);
+      const destPath = path.join(assetsInternosDest, item);
+      const stat = fs.statSync(srcPath);
+      
+      if (stat.isDirectory()) {
+        copyDirectoryRecursive(srcPath, destPath);
+      } else if (item.endsWith('.js') && CONFIG.minifyScripts) {
+        const original = fs.readFileSync(srcPath, 'utf-8');
+        const minified = minifyJs(original);
+        fs.writeFileSync(destPath, minified, 'utf-8');
+      } else if (item.endsWith('.css') && CONFIG.minifyCss) {
+        const original = fs.readFileSync(srcPath, 'utf-8');
+        const minified = minifyCss(original);
+        fs.writeFileSync(destPath, minified, 'utf-8');
+      } else {
+        fs.copyFileSync(srcPath, destPath);
+      }
+    }
+    log(`assetsInternos/ copied`);
   }
 
   // Copy project config

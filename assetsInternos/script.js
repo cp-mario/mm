@@ -78,6 +78,11 @@ let nombreProyecto;
  * This allows customization without modifying code
  */
 
+//DOnt touch this, here the MCFGParser.js content without the export will be inserted
+
+//MCFGParser
+
+
 //data.version is a string with the version TODO: Show it somewere
 fetch(prefix + "config.mcfg")
   .then(res => res.text())
