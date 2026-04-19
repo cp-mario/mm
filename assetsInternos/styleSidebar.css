@@ -79,7 +79,6 @@
 #sidebar-title:hover{
   align-self: center;
   color: rgb(0, 0, 0) !important;
-  font-size: 30px;
   background-color: #b4b4b42f;
   text-align: center;
 }
@@ -154,4 +153,12 @@ desde script.js al main) */
 /* Cuando el botón está activo hacerlo visible subiendole el z-inde */
 #icon-btn2.active{
   z-index: 0;
+}
+
+
+#version {
+  margin-top: auto;
+  padding: 10px;
+  text-align: right;
+  font-family: "JetBrains Mono", monospace;
 }

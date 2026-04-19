@@ -1,67 +1,82 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <!-- Preconnects for faster font loading to reduce CLS caused by late font load -->
-        <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Preconnects for faster font loading to reduce CLS caused by late font load -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-        <!-- Titulo añadido desde main.js al generar el html --> 
-        <title>{{title}}</title>
+    <!-- Titulo añadido desde main.js al generar el html --> 
+    <title>{{title}}</title>
 
-        <!-- Estilos y scripts externos -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.8.4/dist/plyr.css"/>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
-        <script src="https://cdn.jsdelivr.net/npm/plyr@3.8.4/dist/plyr.polyfilled.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/dist/medium-zoom.min.js"></script>
+    <!-- Estilos y scripts externos -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.8.4/dist/plyr.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/plyr@3.8.4/dist/plyr.polyfilled.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/dist/medium-zoom.min.js"></script>
+    
+    <!-- Enlazar el script, el css y el css de la sidebar, y calacular la distancia a la raiz para tener el prefijo (prefix) --> 
+    <!-- Inline critical layout to reduce CLS by reserving space for the sidebar on desktop -->
+    <style>
+      @media (min-width: 1000px) {
+        main { margin-left: 300px; }
+        #sidebar {
+          left: 0;
+          top: 0;
+          width: 300px;
+          height: 100%;
+          position: fixed;
+        }
+      }
+
+      main{
+        margin-bottom: 20px;
+        max-width: 1000px;
+        min-width: 0px;
+        padding-inline: 10%;
+        flex-grow: 1;
+        overflow-wrap: break-word;
+      }
+
+
+      :root {
+        --plyr-color-main: #9bb2d7;
+        text-align: left;
+        font-size: 17px !important;
+      }
+
+      /* Improve image/video stability: reserve space for images and videos and lazy-load images by default */
+      img.img { display: block; max-width: 100%; height: auto; }
+      video { width: 100%; height: auto; display: block; }
+    </style>
+    <script>
+      const cacheBust = Date.now();
+      const p = window.location.pathname;
+      const i = p.indexOf("/pages/");
+      const prefix = i === -1 ? "" : "../".repeat(p.slice(i + 7).split("/").filter(x => x).length); 
         
-        <!-- Enlazar el script, el css y el css de la sidebar, y calacular la distancia a la raiz para tener el prefijo (prefix) --> 
-        <!-- Inline critical layout to reduce CLS by reserving space for the sidebar on desktop -->
-        <style>
-          @media (min-width: 1000px) {
-            main { margin-left: 300px; }
-            #sidebar {
-              left: 0;
-              top: 0;
-              width: 300px;
-              height: 100%;
-              position: fixed;
-            }
-          }
-          /* Improve image/video stability: reserve space for images and videos and lazy-load images by default */
-          img.img { display: block; max-width: 100%; height: auto; }
-          video { width: 100%; height: auto; display: block; }
-        </style>
-        <script>
-            const cacheBust = Date.now();
-            const path = window.location.pathname;
-            const parts = path.split("/").filter(p => p.length > 0);
-            const rootIndex = parts.indexOf("pages");
-            const depth = rootIndex === -1 ? 0 : parts.length - (rootIndex + 1);
-            const prefix = "../".repeat(depth); 
-            
-            // Cargar script.js
-            const script = document.createElement("script");
-            script.src = prefix + "assetsInternos/script.js?" + cacheBust;
-            document.head.appendChild(script);
+      // Cargar script.js
+      const script = document.createElement("script");
+      script.src = prefix + "assetsInternos/script.js?" + cacheBust;
+      document.head.appendChild(script);
 
-            // Cargar style.css
-            const link = document.createElement("link");
-            link.rel = "stylesheet";
-            link.href = prefix + "assetsInternos/style.css?" + cacheBust;
-            document.head.appendChild(link);
+      // Cargar style.css
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = prefix + "assetsInternos/style.css?" + cacheBust;
+      document.head.appendChild(link);
 
-            // Cargar styleSidebar.css
-            const linkSidebar = document.createElement("link");
-            linkSidebar.rel = "stylesheet";
-            linkSidebar.href = prefix + "assetsInternos/styleSidebar.css?" + cacheBust;
-            document.head.appendChild(linkSidebar);
-        </script>
+      // Cargar styleSidebar.css
+      const linkSidebar = document.createElement("link");
+      linkSidebar.rel = "stylesheet";
+      linkSidebar.href = prefix + "assetsInternos/styleSidebar.css?" + cacheBust;
+      document.head.appendChild(linkSidebar);
+  </script>
 
-    </head>
+  </head>
     <body>
         <!-- Boton de sacar la sidebar -->
         <button id="icon-btn2">
@@ -75,9 +90,19 @@
             <hr id="madeWithMMXHr">
             <div id="madeWithMMX">Made with <a target="_blank" href="https://github.com/cp-mario/MMX">MMX</a></div>
         </main>
-        <!-- Donde se cargara la sidebar desde script.js -->
+        <!-- Aqui empieza la sidebar --> 
+        <nav id="sidebar">
+          <div id="div-titulo">
+            <a id="sidebar-title" href = '/'>{{pageTitle}}</a>
+            <button id="icon-btn">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M3 6h18M3 12h18M3 18h18" stroke="#e5edf4" stroke-width="2"/>
+              </svg>
+            </button>
+          </div>
+          <div id="sidebar-menu"></div>
+          <div id="version">{{version}}</div>
+        </nav>
+        <!-- Aqui termina la sidebar --> 
     </body>
-    <style>
-
-    </style>
 </html>

@@ -28,9 +28,8 @@
 
 
 
-/* Paletas de colores */
+/* Paletas de colores y medidas comunes */
 :root {
-    /* TODO implementar esto en el codigo */
     --border-color: #a7a7a7;
     --border-radius-base: 5px;
     --border-width: 1px;
@@ -46,13 +45,6 @@ hr {
     height: 0;
 }
 
-
-
-:root {
-  --plyr-color-main: #9bb2d7;
-  text-align: left;
-  font-size: 17px !important;
-}
 
 
 .note{
@@ -81,14 +73,6 @@ main p{
     margin: 0px;
 }
 
-main{
-    margin-bottom: 20px;
-    max-width: 1000px;
-    min-width: 0px;
-    padding-inline: 10%;
-    flex-grow: 1;
-    overflow-wrap: break-word;
-}
 
 /* Improve CLS by preserve predictable space for media and ensure responsive sizing */
 img.img {
@@ -351,7 +335,6 @@ th.vertical-title{
 }
 
 #header-navigator-title {
-  font-size: 14px;
   font-weight: bold;
   color: #283143;
   margin-bottom: 15px;
@@ -375,7 +358,6 @@ th.vertical-title{
   display: block;
   color: #5474a9;
   text-decoration: none;
-  font-size: 13px;
   padding: 3px 8px;
   border-radius: 3px;
   transition: background-color 0.2s, color 0.2s;
@@ -464,6 +446,10 @@ th.vertical-title{
   border: 0px;
 }
 
+#header-navigator {
+  font-size: 14px;
+}
+
 #header-navigator-toggle:hover {
   background-color: #e8eef5;
   color: #5474a9;
@@ -509,7 +495,6 @@ th.vertical-title{
 }
 
 #header-navigator-dropdown-title {
-  font-size: 14px;
   font-weight: bold;
   color: #283143;
   margin-bottom: 15px;
@@ -533,7 +518,6 @@ th.vertical-title{
   display: block;
   color: #5474a9;
   text-decoration: none;
-  font-size: 13px;
   padding: 3px 8px;
   border-radius: 3px;
   transition: background-color 0.2s, color 0.2s;

@@ -78,19 +78,6 @@ let nombreProyecto;
  * This allows customization without modifying code
  */
 
-//DOnt touch this, here the MCFGParser.js content without the export will be inserted
-
-//MCFGParser
-
-
-//data.version is a string with the version TODO: Show it somewere
-fetch(prefix + "config.mcfg")
-  .then(res => res.text())
-  .then(text => {
-    const data = parseMCFG(text);
-    nombreProyecto = data.title;
-  });
-
 // ============================================================================
 // STEP 1B: Highlight target heading on page load (if URL has hash)
 // ============================================================================
@@ -183,37 +170,26 @@ document.querySelectorAll('pre.fileCode').forEach(async pre => {
 });
 
 // ============================================================================
-// STEP 4: Load sidebar and build dynamic navigation menu
+// STEP 4: Build dynamic navigation menu
 // ============================================================================
 /**
- * Loads sidebar.html and initializes the navigation menu
- * Uses index.json to build a tree structure of all pages
+ * Builds navigation menu from index.json
  * Supports folder expand/collapse with session storage
+ * The sidebar HTML is now pre-loaded in the document
  */
-fetch(prefix + "assetsInternos/sidebar.html")
-  .then(res => {
-    if (!res.ok) throw new Error("Could not load sidebar.html");
-    return res.text();
-  })
-  .then(html => {
-    // Insert the sidebar HTML into the page
-    document.body.insertAdjacentHTML('beforeend', html);
-    
-    // Initialize hamburger menu for mobile
-    cargarMenuHamburguesa();
 
-    // Load the auto-generated index.json file
-    // Index contains the complete directory/page structure as JSON
-    return fetch(prefix + "assetsInternos/index.json");
-  })
+// Initialize hamburger menu for mobile (sidebar is already in HTML)
+cargarMenuHamburguesa();
+
+// Load index.json and build menu
+fetch(prefix + "assetsInternos/index.json")
   .then(res => {
     if (!res.ok) throw new Error("Could not load index.json");
     return res.json();
   })
   .then(indexData => {
-    // Build the dynamic navigation menu from index.json data
     const menu = document.querySelector("#sidebar-menu");
-    if (!menu) return; // Exit if no menu element found
+    if (!menu) return;
 
     /**
      * ORGANIZE MENU ITEMS
@@ -228,9 +204,8 @@ fetch(prefix + "assetsInternos/sidebar.html")
 
     const ordered = [...orphans, ...folders]; // Combine: pages first, then folders
 
-    // Set the sidebar title as a link to the home page
-    document.getElementById("sidebar-title").href = prefix;
-    document.getElementById("sidebar-title").textContent = nombreProyecto;
+    // Set the sidebar title link to the home page (with prefix for subdirectories)
+    document.getElementById("sidebar-title").href = prefix || "./";
 
     /**
      * Recursively render the menu tree structure
@@ -351,7 +326,7 @@ fetch(prefix + "assetsInternos/sidebar.html")
       }
     });
   })
-  .catch(err => console.error("Error loading sidebar:", err));
+  .catch(err => console.error("Error loading navigation:", err));
 
 // ============================================================================
 // STEP 5: Initialize hamburger menu for mobile

@@ -132,13 +132,6 @@ function processProjectStructure(sourceDir, outputDir, options = {}) {
     log(`assetsInternos/ copied`);
   }
 
-  // Copy project config
-  const configSource = path.join(sourceDir, 'config.mcfg');
-  if (fs.existsSync(configSource)) {
-    fs.copyFileSync(configSource, path.join(outputDir, 'config.mcfg'));
-    log(`config.mcfg copied`);
-  }
-
   // Copy project assets
   const assetsSource = path.join(sourceDir, 'assets');
   if (fs.existsSync(assetsSource)) {
@@ -322,13 +315,48 @@ function convertMmxFile(inputPath, outputPath, outputRoot) {
   const template = fs.readFileSync("./template.html", "utf8");
   const htmlContent = mmxToHtml(content);
 
+  // Title from content heading (for <title> tag)
   const titleMatch = content.match(/^# (.+)$/m);
   const title = titleMatch ? titleMatch[1] : "Documentation";
+
+  // Get project directory from inputPath (handles root index.mmx, pages/*.mmx, and pages/subfolder/*.mmx)
+  const inputDir = path.dirname(inputPath);
+  // Find /pages/ anywhere in the path and go up one level to get project root
+  const pagesPos = inputDir.lastIndexOf(path.sep + "pages");
+  let projectDir;
+  if (pagesPos !== -1) {
+    // Go up one level from /pages/
+    projectDir = inputDir.slice(0, pagesPos);
+  } else {
+    // For root index.mmx (directly in project folder), use inputDir itself
+    projectDir = inputDir;
+  }
+  
+  // Try to read title and version from project's config.mcfg
+  let pageTitle = title; // Default to content title
+  let version = ""; // Default empty version
+  const configPath = path.join(projectDir, "config.mcfg");
+  if (fs.existsSync(configPath)) {
+    try {
+      const configContent = fs.readFileSync(configPath, "utf8");
+      const configData = parseMCFG(configContent);
+      if (configData.title) {
+        pageTitle = configData.title;
+      }
+      if (configData.version) {
+        version = configData.version;
+      }
+    } catch (e) {
+      // Ignore config parse errors, use default values
+    }
+  }
 
   const prefix = calculatePrefix(outputPath, outputRoot);
   
   let finalTemplate = template
     .replaceAll("{{title}}", title)
+    .replaceAll("{{pageTitle}}", pageTitle)
+    .replaceAll("{{version}}", version)
     .replaceAll("{{content}}", htmlContent)
     .replaceAll("{{singlePageScript}}", singleFileContent);
   
