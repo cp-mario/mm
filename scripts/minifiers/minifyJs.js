@@ -15,7 +15,6 @@ export function minifyJs(jsCode) {
     
     // Check for single-line comment //
     if (char === "/" && jsCode[i + 1] === "/") {
-      // Skip until end of line
       while (i < len && jsCode[i] !== "\n" && jsCode[i] !== "\r") {
         i++;
       }
@@ -25,10 +24,8 @@ export function minifyJs(jsCode) {
     // Check for multi-line comment /* */
     if (char === "/" && jsCode[i + 1] === "*") {
       i += 2;
-      // Handle both * and ! for documentation comments
       if (jsCode[i] === "!") i++;
       
-      // Find end of comment
       while (i < len - 1) {
         if (jsCode[i] === "*" && jsCode[i + 1] === "/") {
           i += 2;
@@ -63,13 +60,11 @@ export function minifyJs(jsCode) {
       continue;
     }
     
-    // Handle regex literals: /pattern/ or /pattern/flags
-    // Regex starts after = ( : , ( [ { ? : || && == != === !== <= >= return throw case 
+    // Handle regex literals
     if (char === "/" && jsCode[i + 1] !== "/" && jsCode[i + 1] !== "*") {
       const codeAfterOperators = "=:(,[-+*%&|^!?<>=}];"
       const prevNonSpace = findPreviousNonSpace(result, lastChar);
       if (prevNonSpace && codeAfterOperators.includes(prevNonSpace)) {
-        // This is a regex literal - keep it entirely
         result += char;
         i++;
         while (i < len) {
@@ -81,7 +76,6 @@ export function minifyJs(jsCode) {
           if (jsCode[i] === "/") {
             result += "/";
             i++;
-            // Check for regex flags (g, i, m, s, u, y)
             while (i < len && "gimsuy".includes(jsCode[i])) {
               result += jsCode[i];
               i++;
@@ -96,23 +90,17 @@ export function minifyJs(jsCode) {
       }
     }
     
-    // Regular character - keep it
     result += char;
     lastChar = char;
     i++;
   }
   
-  // Remove unnecessary whitespace
   result = removeUnnecessaryWhitespace(result);
-  
   return result;
 }
 
 /**
  * Find the previous non-whitespace character
- * @param {string} result - Current result string
- * @param {string} lastChar - Last char before spaces
- * @returns {string} Previous non-space character
  */
 function findPreviousNonSpace(result, lastChar) {
   if (lastChar && lastChar !== " " && lastChar !== "\n" && lastChar !== "\t" && lastChar !== "\r") {
@@ -141,14 +129,12 @@ function removeUnnecessaryWhitespace(code) {
   while (i < len) {
     const char = code[i];
     
-    // Handle escape sequences
     if (char === "\\" && !inString && !inRegex) {
       result += char + code[i + 1];
       i += 2;
       continue;
     }
     
-    // Detect string start
     if ((char === '"' || char === "'" || char === "`") && !inString && !inRegex) {
       inString = true;
       stringChar = char;
@@ -157,7 +143,6 @@ function removeUnnecessaryWhitespace(code) {
       continue;
     }
     
-    // Detect string end
     if (char === stringChar && inString) {
       inString = false;
       result += char;
@@ -165,14 +150,12 @@ function removeUnnecessaryWhitespace(code) {
       continue;
     }
     
-    // Inside string - keep everything
     if (inString) {
       result += char;
       i++;
       continue;
     }
     
-    // Detect regex start (simplified)
     if (!inRegex && char === "/" && i + 1 < len && code[i + 1] !== "/" && code[i + 1] !== "*") {
       const codeAfterOperators = "=:(,[-+*%&|^!?<>=}];"
       const prevNonSpace = findPreviousNonSpaceSimple(result);
@@ -184,11 +167,9 @@ function removeUnnecessaryWhitespace(code) {
       }
     }
     
-    // Detect regex end
     if (inRegex && char === "/") {
       result += char;
       i++;
-      // Check for flags
       while (i < len && "gimsuy".includes(code[i])) {
         result += code[i];
         i++;
@@ -197,14 +178,12 @@ function removeUnnecessaryWhitespace(code) {
       continue;
     }
     
-    // Inside regex - keep everything
     if (inRegex) {
       result += char;
       i++;
       continue;
     }
     
-    // Track brackets
     if (char === "(") parenLevel++;
     if (char === ")") parenLevel--;
     if (char === "{") braceLevel++;
@@ -212,9 +191,7 @@ function removeUnnecessaryWhitespace(code) {
     if (char === "[") bracketLevel++;
     if (char === "]") bracketLevel--;
     
-    // Whitespace handling
     if (char === " " || char === "\n" || char === "\t" || char === "\r") {
-      // Don't remove space after: , ( [ { = : ? ? :
       if (char === " " && result.length > 0) {
         const lastChar = result[result.length - 1];
         if (",([{=:?|+-*/%".includes(lastChar)) {
@@ -225,12 +202,10 @@ function removeUnnecessaryWhitespace(code) {
           lastWasSpace = true;
         }
       }
-      // Skip consecutive whitespace
       if (lastWasSpace) {
         i++;
         continue;
       }
-      // Replace newlines/tabs with single space when needed
       if (parenLevel > 0 || braceLevel > 0 || bracketLevel > 0) {
         if (!lastWasSpace) {
           result += " ";
@@ -246,19 +221,12 @@ function removeUnnecessaryWhitespace(code) {
     i++;
   }
   
-  // Remove leading/trailing spaces around operators
   result = result.replace(/\s+([;,(){}\[\]=<>+|&!?:-])/g, "$1");
   result = result.replace(/([;,(){}\[\]=<>+|&!?:-])\s+/g, "$1");
   
   return result;
 }
 
-/**
- * Find the previous non-whitespace character
- * @param {string} result - Current result string
- * @param {string} lastChar - Last char before spaces
- * @returns {string} Previous non-space character
- */
 function findPreviousNonSpaceSimple(result) {
   for (let j = result.length - 1; j >= 0; j--) {
     if (result[j] !== " " && result[j] !== "\n" && result[j] !== "\t" && result[j] !== "\r") {

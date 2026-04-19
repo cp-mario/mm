@@ -8,7 +8,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { mmxToHtml } from "./scripts/parser.js";
 import { parseMCFG } from "./scripts/MCFGParser.js";
-import { minifyJs } from "./scripts/minifyJs.js";
+import { minifyJs } from "./scripts/minifiers/minifyJs.js";
+import { minifyCss } from "./scripts/minifiers/minifyCss.js";
 
 const CONFIG = parseMCFG(fs.readFileSync('./config.mcfg', 'utf-8'))
 
@@ -146,6 +147,11 @@ function copyDirectoryRecursive(source, destination) {
       // Minify JS files
       const original = fs.readFileSync(srcPath, 'utf-8');
       const minified = minifyJs(original);
+      fs.writeFileSync(destPath, minified, 'utf-8');
+    } else if (item.endsWith('.css') && CONFIG.minifyCss) {
+      // Minify CSS files
+      const original = fs.readFileSync(srcPath, 'utf-8');
+      const minified = minifyCss(original);
       fs.writeFileSync(destPath, minified, 'utf-8');
     } else {
       fs.copyFileSync(srcPath, destPath);
