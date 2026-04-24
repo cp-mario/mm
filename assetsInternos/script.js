@@ -184,159 +184,159 @@ document.addEventListener('DOMContentLoaded', async () => {
  * Builds navigation menu from index.json
  * Supports folder expand/collapse with session storage
  * The sidebar HTML is now pre-loaded in the document
+ * Also initializes hamburger menu for mobile
  */
-
-// Initialize hamburger menu for mobile (wait for DOM to be ready)
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener('DOMContentLoaded', () => {
+  // Initialize hamburger menu for mobile
   cargarMenuHamburguesa();
-});
 
-// Load index.json and build menu
-fetch(prefix + "assetsInternos/index.json")
-  .then(res => {
-    if (!res.ok) throw new Error("Could not load index.json");
-    return res.json();
-  })
-  .then(indexData => {
-    const menu = document.querySelector("#sidebar-menu");
-    if (!menu) return;
+  // Load index.json and build menu
+  fetch(prefix + "assetsInternos/index.json")
+    .then(res => {
+      if (!res.ok) throw new Error("Could not load index.json");
+      return res.json();
+    })
+    .then(indexData => {
+      const menu = document.querySelector("#sidebar-menu");
+      if (!menu) return;
 
-    /**
-     * ORGANIZE MENU ITEMS
-     * Sort with loose files (pages) first, then folders
-     * Both groups are alphabetically sorted
-     */
-    const orphans = indexData.filter(n => n.type === "file"); // Loose pages
-    const folders = indexData.filter(n => n.type === "folder"); // Folders
+      /**
+       * ORGANIZE MENU ITEMS
+       * Sort with loose files (pages) first, then folders
+       * Both groups are alphabetically sorted
+       */
+      const orphans = indexData.filter(n => n.type === "file"); // Loose pages
+      const folders = indexData.filter(n => n.type === "folder"); // Folders
 
-    orphans.sort((a, b) => a.name.localeCompare(b.name)); // Sort alphabetically
-    folders.sort((a, b) => a.name.localeCompare(b.name)); // Sort alphabetically
+      orphans.sort((a, b) => a.name.localeCompare(b.name)); // Sort alphabetically
+      folders.sort((a, b) => a.name.localeCompare(b.name)); // Sort alphabetically
 
-    const ordered = [...orphans, ...folders]; // Combine: pages first, then folders
+      const ordered = [...orphans, ...folders]; // Combine: pages first, then folders
 
-    // Set the sidebar title link to the home page (with prefix for subdirectories)
-    document.getElementById("sidebar-title").href = prefix || "./";
+      // Set the sidebar title link to the home page (with prefix for subdirectories)
+      document.getElementById("sidebar-title").href = prefix || "./";
 
-    /**
-     * Recursively render the menu tree structure
-     * Handles both files (links) and folders (collapsible sections)
-     * 
-     * @param {Object} node - A menu node (file or folder)
-     * @param {Element} container - The DOM element to render into
-     */
-    function renderNode(node, container) {
-      if (node.type === "file") {
-        // FILE: Create a simple anchor link
-        const a = document.createElement("a");
-        a.href = prefix + "pages/" + node.path;
-        a.textContent = node.name;
-        a.style.display = "block";
-        container.appendChild(a);
-        return;
-      }
-
-      if (node.type === "folder") {
-        // FOLDER: Create a collapsible section
-        const folderId = "folder_" + node.path; // Unique ID based on path
-
-        // Create the folder header (clickable title)
-        const header = document.createElement("div");
-        header.classList.add("folder-header");
-
-        // Folder icon (expand/collapse indicator)
-        const icon = document.createElement("span");
-        icon.classList.add("folder-icon");
-
-        // Folder name/title
-        const title = document.createElement("span");
-        title.textContent = node.name;
-        title.classList.add("folder-title");
-
-        // Assemble the header
-        header.appendChild(icon);
-        header.appendChild(title);
-        container.appendChild(header);
-
-        // Create the content container (hidden by default)
-        const sub = document.createElement("div");
-        sub.classList.add("folder-content");
-        sub.style.marginLeft = "15px"; // Indent for visual hierarchy
-        container.appendChild(sub);
-
-        // Recursively render children (subfolders and files)
-        node.children.forEach(child => renderNode(child, sub));
-
-        /**
-         * RESTORE COLLAPSED/EXPANDED STATE
-         * Uses sessionStorage to remember folder states across page visits
-         * Default: folders start collapsed
-         */
-        const savedState = sessionStorage.getItem(folderId);
-        const isCollapsed = savedState === "closed" || savedState === null;
-
-        if (isCollapsed) {
-          sub.classList.add("collapsed"); // Hide the folder contents
-          icon.innerHTML = iconExpand; // Show expand icon
-        } else {
-          icon.innerHTML = iconCollapse; // Show collapse icon
+      /**
+       * Recursively render the menu tree structure
+       * Handles both files (links) and folders (collapsible sections)
+       * 
+       * @param {Object} node - A menu node (file or folder)
+       * @param {Element} container - The DOM element to render into
+       */
+      function renderNode(node, container) {
+        if (node.type === "file") {
+          // FILE: Create a simple anchor link
+          const a = document.createElement("a");
+          a.href = prefix + "pages/" + node.path;
+          a.textContent = node.name;
+          a.style.display = "block";
+          container.appendChild(a);
+          return;
         }
 
-        /**
-         * TOGGLE FOLDER EXPANDED/COLLAPSED
-         * Click handler for the folder header
-         */
-        header.addEventListener("click", () => {
-          const collapsed = sub.classList.toggle("collapsed");
+        if (node.type === "folder") {
+          // FOLDER: Create a collapsible section
+          const folderId = "folder_" + node.path; // Unique ID based on path
 
-          if (collapsed) {
-            // Folder is now collapsed
-            icon.innerHTML = iconExpand;
-            sessionStorage.setItem(folderId, "closed");
+          // Create the folder header (clickable title)
+          const header = document.createElement("div");
+          header.classList.add("folder-header");
+
+          // Folder icon (expand/collapse indicator)
+          const icon = document.createElement("span");
+          icon.classList.add("folder-icon");
+
+          // Folder name/title
+          const title = document.createElement("span");
+          title.textContent = node.name;
+          title.classList.add("folder-title");
+
+          // Assemble the header
+          header.appendChild(icon);
+          header.appendChild(title);
+          container.appendChild(header);
+
+          // Create the content container (hidden by default)
+          const sub = document.createElement("div");
+          sub.classList.add("folder-content");
+          sub.style.marginLeft = "15px"; // Indent for visual hierarchy
+          container.appendChild(sub);
+
+          // Recursively render children (subfolders and files)
+          node.children.forEach(child => renderNode(child, sub));
+
+          /**
+           * RESTORE COLLAPSED/EXPANDED STATE
+           * Uses sessionStorage to remember folder states across page visits
+           * Default: folders start collapsed
+           */
+          const savedState = sessionStorage.getItem(folderId);
+          const isCollapsed = savedState === "closed" || savedState === null;
+
+          if (isCollapsed) {
+            sub.classList.add("collapsed"); // Hide the folder contents
+            icon.innerHTML = iconExpand; // Show expand icon
           } else {
-            // Folder is now expanded
-            icon.innerHTML = iconCollapse;
-            sessionStorage.setItem(folderId, "open");
+            icon.innerHTML = iconCollapse; // Show collapse icon
           }
-        });
+
+          /**
+           * TOGGLE FOLDER EXPANDED/COLLAPSED
+           * Click handler for the folder header
+           */
+          header.addEventListener("click", () => {
+            const collapsed = sub.classList.toggle("collapsed");
+
+            if (collapsed) {
+              // Folder is now collapsed
+              icon.innerHTML = iconExpand;
+              sessionStorage.setItem(folderId, "closed");
+            } else {
+              // Folder is now expanded
+              icon.innerHTML = iconCollapse;
+              sessionStorage.setItem(folderId, "open");
+            }
+          });
+        }
       }
-    }
 
-    // Render all top-level nodes into the menu
-    ordered.forEach(node => renderNode(node, menu));
+      // Render all top-level nodes into the menu
+      ordered.forEach(node => renderNode(node, menu));
 
-    /**
-     * SAVE AND RESTORE SCROLL POSITION
-     * Remembers where the user was scrolled in the sidebar
-     * Useful for long navigation menus
-     * This is set up once outside the render loop for efficiency
-     */
-    const tree = document.getElementById("sidebar-menu");
+      /**
+       * SAVE AND RESTORE SCROLL POSITION
+       * Remembers where the user was scrolled in the sidebar
+       * Useful for long navigation menus
+       * This is set up once outside the render loop for efficiency
+       */
+      const tree = document.getElementById("sidebar-menu");
 
-    // Restore scroll position on page load
-    const savedScroll = sessionStorage.getItem("sidebar-menu");
-    if (savedScroll !== null) {
-      tree.scrollTop = parseInt(savedScroll, 10);
-    }
-
-    // Save scroll position in real-time as user scrolls
-    tree.addEventListener("scroll", () => {
-      sessionStorage.setItem("sidebar-menu", tree.scrollTop);
-    });
-
-    /**
-     * HIGHLIGHT CURRENT PAGE
-     * Adds an "active" class to the link of the current page
-     * Allows CSS styling to show which page is being viewed
-     */
-    const currentPath = path.replace(/^\//, ""); // Remove leading slash
-    const links = document.querySelectorAll("#sidebar-menu a");
-    links.forEach(a => {
-      if (a.href.endsWith(currentPath)) {
-        a.classList.add("active"); // Mark this link as the current page
+      // Restore scroll position on page load
+      const savedScroll = sessionStorage.getItem("sidebar-menu");
+      if (savedScroll !== null) {
+        tree.scrollTop = parseInt(savedScroll, 10);
       }
-    });
-  })
-  .catch(err => console.error("Error loading navigation:", err));
+
+      // Save scroll position in real-time as user scrolls
+      tree.addEventListener("scroll", () => {
+        sessionStorage.setItem("sidebar-menu", tree.scrollTop);
+      });
+
+      /**
+       * HIGHLIGHT CURRENT PAGE
+       * Adds an "active" class to the link of the current page
+       * Allows CSS styling to show which page is being viewed
+       */
+      const currentPath = path.replace(/^\//, ""); // Remove leading slash
+      const links = document.querySelectorAll("#sidebar-menu a");
+      links.forEach(a => {
+        if (a.href.endsWith(currentPath)) {
+          a.classList.add("active"); // Mark this link as the current page
+        }
+      });
+    })
+    .catch(err => console.error("Error loading navigation:", err));
+});
 
 // ============================================================================
 // STEP 5: Initialize hamburger menu for mobile
