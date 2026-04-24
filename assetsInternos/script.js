@@ -69,6 +69,8 @@ const navigatorButtonClose = `
  */
 let nombreProyecto;
 
+
+const path = window.location.pathname;
 // ============================================================================
 // STEP 1: Load project configuration
 // ============================================================================
