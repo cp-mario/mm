@@ -178,8 +178,10 @@ document.querySelectorAll('pre.fileCode').forEach(async pre => {
  * The sidebar HTML is now pre-loaded in the document
  */
 
-// Initialize hamburger menu for mobile (sidebar is already in HTML)
-cargarMenuHamburguesa();
+// Initialize hamburger menu for mobile (wait for DOM to be ready)
+document.addEventListener("DOMContentLoaded", () => {
+  cargarMenuHamburguesa();
+});
 
 // Load index.json and build menu
 fetch(prefix + "assetsInternos/index.json")

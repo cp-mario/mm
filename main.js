@@ -358,7 +358,8 @@ function convertMmxFile(inputPath, outputPath, outputRoot) {
     .replaceAll("{{pageTitle}}", pageTitle)
     .replaceAll("{{version}}", version)
     .replaceAll("{{content}}", htmlContent)
-    .replaceAll("{{singlePageScript}}", singleFileContent);
+    .replaceAll("{{singlePageScript}}", singleFileContent)
+    .replaceAll("{{prefix}}", prefix);
   
   finalTemplate = applyPathPrefix(finalTemplate, prefix);
 

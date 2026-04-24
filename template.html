@@ -3,7 +3,6 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <!-- Preconnects for faster font loading to reduce CLS caused by late font load -->
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,12 +10,19 @@
     <!-- Titulo añadido desde main.js al generar el html --> 
     <title>{{title}}</title>
 
+    <script>
+      const prefix = "{{prefix}}"
+    </script>
+
     <!-- Estilos y scripts externos -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.8.4/dist/plyr.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
     <script src="https://cdn.jsdelivr.net/npm/plyr@3.8.4/dist/plyr.polyfilled.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/dist/medium-zoom.min.js"></script>
+    <script src="{{prefix}}assetsInternos/script.js"></script>
+    <link rel="stylesheet" href="{{prefix}}assetsInternos/style.css">
+    <link rel="stylesheet" href="{{prefix}}assetsInternos/styleSidebar.css">
     
     <!-- Enlazar el script, el css y el css de la sidebar, y calacular la distancia a la raiz para tener el prefijo (prefix) --> 
     <!-- Inline critical layout to reduce CLS by reserving space for the sidebar on desktop -->
@@ -52,29 +58,6 @@
       img.img { display: block; max-width: 100%; height: auto; }
       video { width: 100%; height: auto; display: block; }
     </style>
-    <script>
-      const cacheBust = Date.now();
-      const path = window.location.pathname;
-      const i = path.indexOf("/pages/");
-      const prefix = i === -1 ? "" : "../".repeat(path.slice(i + 7).split("/").filter(x => x).length); 
-        
-      // Cargar script.js
-      const script = document.createElement("script");
-      script.src = prefix + "assetsInternos/script.js?" + cacheBust;
-      document.head.appendChild(script);
-
-      // Cargar style.css
-      const link = document.createElement("link");
-      link.rel = "stylesheet";
-      link.href = prefix + "assetsInternos/style.css?" + cacheBust;
-      document.head.appendChild(link);
-
-      // Cargar styleSidebar.css
-      const linkSidebar = document.createElement("link");
-      linkSidebar.rel = "stylesheet";
-      linkSidebar.href = prefix + "assetsInternos/styleSidebar.css?" + cacheBust;
-      document.head.appendChild(linkSidebar);
-  </script>
 
   </head>
     <body>
