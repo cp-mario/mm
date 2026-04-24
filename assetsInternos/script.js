@@ -510,17 +510,26 @@ codes.forEach(el => {
 // STEP 8: Initialize media players and image zoom
 // ============================================================================
 /**
+ * Initialize media players and image zoom after DOM is ready
  * medium-zoom: Click on images to zoom in/out
- * Enhanced viewing experience for documentation graphics
- */
-mediumZoom('.img');
-
-/**
  * Plyr.js: Initialize video and audio players
- * Provides custom, responsive media controls
  */
-const players = Plyr.setup('video'); // Video player controls
-const aundioPlayers = Plyr.setup('audio'); // Audio player controls
+document.addEventListener('DOMContentLoaded', () => {
+  // medium-zoom: Click on images to zoom in/out
+  mediumZoom('.img');
+
+  // Plyr.js: Initialize video and audio players
+  // Only initialize if elements exist
+  const videos = document.querySelectorAll('video');
+  if (videos.length > 0) {
+    Plyr.setup('video');
+  }
+
+  const audios = document.querySelectorAll('audio');
+  if (audios.length > 0) {
+    Plyr.setup('audio');
+  }
+});
 
 // ============================================================================
 // STEP 9: Generate header navigator (table of contents) on right side
