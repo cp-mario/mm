@@ -144,13 +144,18 @@ if (document.readyState === "loading") {
  * Fetches the file content and injects it into the code block
  * Optionally applies syntax highlighting with hljs
  */
-document.querySelectorAll('pre.fileCode').forEach(async pre => {
-    // Get the file path from the path attribute
-    const path = pre.getAttribute("path");
+document.addEventListener('DOMContentLoaded', async () => {
+  const fileCodeBlocks = document.querySelectorAll('pre.fileCode');
+  
+  // Process each file code block sequentially
+  for (const pre of fileCodeBlocks) {
+    const filePath = pre.getAttribute("path");
 
     try {
       // Fetch the file content
-      const contenido = await fetch(path).then(r => r.text());
+      const response = await fetch(filePath);
+      if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+      const contenido = await response.text();
 
       // Create a code element and set its text content
       const code = document.createElement('code');
@@ -167,8 +172,9 @@ document.querySelectorAll('pre.fileCode').forEach(async pre => {
       // Add a copy-to-clipboard button
       createCopyButton(pre);
     } catch (error) {
-      console.error(`Error loading code from ${path}:`, error);
+      console.error(`Error loading code from ${filePath}:`, error);
     }
+  }
 });
 
 // ============================================================================
@@ -407,12 +413,21 @@ function cargarMenuHamburguesa() {
  * Adds copy buttons to all inline code blocks (not file code blocks)
  * Users can click to copy code to their clipboard
  */
-document.querySelectorAll('pre.multiline-code').forEach(pre => {
+document.addEventListener('DOMContentLoaded', () => {
+  // STEP 6: Add copy buttons to inline code blocks
+  document.querySelectorAll('pre.multiline-code').forEach(pre => {
     // Skip file code blocks (they get their own copy button in step 3)
     if (pre.classList.contains("fileCode")) return;
     
     // Create and attach copy button
     createCopyButton(pre);
+  });
+
+  // STEP 7: Apply syntax highlighting to code blocks with auto="true"
+  // This NOW works for both inline and external code blocks (loaded in STEP 3)
+  document.querySelectorAll('pre[auto="true"] > code').forEach(el => {
+    hljs.highlightElement(el);
+  });
 });
 
 /**
