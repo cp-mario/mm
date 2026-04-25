@@ -156,14 +156,29 @@ desde script.js al main) */
 }
 
 
-#version {
+#versionDiv {
+  font-size: 16px;
+  display: flex;
+  justify-content: space-between;
   margin-top: auto;
   padding: 10px;
   text-align: right;
   font-family: "JetBrains Mono", monospace;
+  color: #161D37;
 }
-
 
 .active {
   color: #0073d7 !important;
+}
+
+#madeWithMMX {
+  text-align: left;
+}
+
+#madeWithMMX a:hover{
+  text-decoration: underline;
+}
+
+#madeWithMMX a{
+  color: #390042 !important;
 }

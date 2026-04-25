@@ -4,30 +4,6 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
 
 
-/* Made with MMX text */
-
-#madeWithMMX {
-    font-family: "JetBrains Mono", monospace;
-    color: #a09b9b;
-    text-align: center;
-}
-
-#madeWithMMX a:hover{
-    color: #424242 !important;
-}
-
-#madeWithMMX a{
-    color: #636363 !important;
-}
-
-
-#madeWithMMXHr {
-    margin-top: 50px !important;
-    margin-bottom: 10px !important;
-}
-
-
-
 /* Paletas de colores y medidas comunes */
 :root {
     --border-color: #a7a7a7;
@@ -62,17 +38,20 @@ hr {
 }
 
 .coloredText {
-    display: inline;
+  display: inline;
 }
 
 .note > p{
-    margin-block: 2px;
+  margin-block: 2px;
 }
 
 main p{
-    margin: 0px;
+  margin: 0px;
 }
 
+main{
+  margin-bottom: 100px !important;
+}
 
 /* Improve CLS by preserve predictable space for media and ensure responsive sizing */
 img.img {
@@ -88,27 +67,27 @@ video, audio {
 }
 
 .audio{
-    height: 52px;
-    margin-top: 30px;
-    margin-bottom: 30px;
+  height: 52px;
+  margin-top: 30px;
+  margin-bottom: 30px;
 }
 
 h1,h2,h3,h4,h5,h6  {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 .note-label {
-color: #007bff;
-font-weight: bolder;
+  color: #007bff;
+  font-weight: bolder;
 }
 
 body{
-    display: flex;
-    font-family: "Lato", sans-serif;
-    align-items: center;
-    justify-content: center;
-    margin: 0;
-    background-color: #f3f7fb;
+  display: flex;
+  font-family: "Lato", sans-serif;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  background-color: #f3f7fb;
 }
 
 main .img {

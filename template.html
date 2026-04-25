@@ -73,8 +73,6 @@
         <main>
             <!-- Donde se insertara el contenido de la pagina --> 
             {{content}}
-            <hr id="madeWithMMXHr">
-            <div id="madeWithMMX">Made with <a target="_blank" href="https://github.com/cp-mario/MMX">MMX</a></div>
         </main>
         <!-- Aqui empieza la sidebar --> 
         <nav id="sidebar">
@@ -87,7 +85,11 @@
             </button>
           </div>
           <div id="sidebar-menu"></div>
-          <div id="version">{{version}}</div>
+          
+          <div id="versionDiv">
+            <div id="madeWithMMX">Made with <a target="_blank" href="https://github.com/cp-mario/MMX">MMX</a></div>
+            <div id="version">{{version}}</div>
+          </div>
         </nav>
         <!-- Aqui termina la sidebar --> 
     </body>
