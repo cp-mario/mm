@@ -335,6 +335,7 @@ function convertMmxFile(inputPath, outputPath, outputRoot) {
   // Try to read title and version from project's config.mcfg
   let pageTitle = title; // Default to content title
   let version = ""; // Default empty version
+  let lang = "en" //Default english lang
   const configPath = path.join(projectDir, "config.mcfg");
   if (fs.existsSync(configPath)) {
     try {
@@ -345,6 +346,9 @@ function convertMmxFile(inputPath, outputPath, outputRoot) {
       }
       if (configData.version) {
         version = configData.version;
+      }
+      if (configData.lang) {
+        lang = configData.lang;
       }
     } catch (e) {
       // Ignore config parse errors, use default values
@@ -359,7 +363,9 @@ function convertMmxFile(inputPath, outputPath, outputRoot) {
     .replaceAll("{{version}}", version)
     .replaceAll("{{content}}", htmlContent)
     .replaceAll("{{singlePageScript}}", singleFileContent)
-    .replaceAll("{{prefix}}", prefix);
+    .replaceAll("{{prefix}}", prefix)
+    .replaceAll("{{lang}}", lang);
+    
   
   finalTemplate = applyPathPrefix(finalTemplate, prefix);
 

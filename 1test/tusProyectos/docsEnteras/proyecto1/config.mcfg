@@ -1,2 +1,6 @@
+#Title of the documentation
 title = "MMX"
+#Version of the documentation
 version = "v1.1"
+#Language of the documentation, use BCP 47 (https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry)
+lang = "en"
