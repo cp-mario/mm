@@ -305,6 +305,31 @@ if (CONFIG.singleFile) {
 
 
 /**
+ * Detects if content contains any images, audios, videos, or code with auto flag
+ * @param {string} mmxContent - Raw MMX content
+ * @returns {Object} Object with anyImage, anyAudio, anyVideo, anyCodeAuto booleans
+ */
+function detectMediaContent(mmxContent) {
+  // Image pattern: ![alt](path) [classes]
+  const imageRegex = /!\[([^\]]*)\]\([^)]+\)/;
+  // Audio pattern: !!!( path ) [classes]
+  const audioRegex = /!{3}\([^)]+\)/;
+  // Video pattern: !!( path ) [classes]
+  const videoRegex = /!{2}\([^)]+\)/;
+  // Code with auto flag: #code(path) auto
+  const codeAutoRegex = /#code\([^)]+\)\s+auto/;
+  // Code block with auto tag: :::code auto or :::code(auto)
+  const codeBlockAutoRegex = /:::code[^\n]*auto/;
+  
+  return {
+    anyImage: imageRegex.test(mmxContent),
+    anyAudio: audioRegex.test(mmxContent),
+    anyVideo: videoRegex.test(mmxContent),
+    anyCodeAuto: codeAutoRegex.test(mmxContent) || codeBlockAutoRegex.test(mmxContent)
+  };
+}
+
+/**
  * Converts single .mmx file to HTML
  * @param {string} inputPath - .mmx input file path
  * @param {string} outputPath - HTML output file path
@@ -314,6 +339,9 @@ function convertMmxFile(inputPath, outputPath, outputRoot) {
   const content = fs.readFileSync(inputPath, "utf8");
   const template = fs.readFileSync("./template.html", "utf8");
   const htmlContent = mmxToHtml(content);
+
+  // Detect media content
+  const media = detectMediaContent(content);
 
   // Title from content heading (for <title> tag)
   const titleMatch = content.match(/^# (.+)$/m);
@@ -357,6 +385,28 @@ function convertMmxFile(inputPath, outputPath, outputRoot) {
 
   const prefix = calculatePrefix(outputPath, outputRoot);
   
+
+  //If any plyr elements (Audio or video) make the html load it
+  let plyrCSS = "";
+  let plyrJS = "";
+  if (media.anyVideo || media.anyAudio) {
+    plyrCSS = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.8.4/dist/plyr.css"/>';
+    plyrJS = '<script src="https://cdn.jsdelivr.net/npm/plyr@3.8.4/dist/plyr.polyfilled.min.js"></script>'
+  }
+
+  let mediumZoomJS = "";
+  if (media.anyImage) {
+    mediumZoomJS = '<script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/dist/medium-zoom.min.js"></script>'
+  }
+
+  let highlightJS = "";
+  let highlightCSSTheme = "";
+  if (media.anyCodeAuto) {
+    highlightJS = '<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>'
+    highlightCSSTheme = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">'
+
+  }
+  
   let finalTemplate = template
     .replaceAll("{{title}}", title)
     .replaceAll("{{pageTitle}}", pageTitle)
@@ -364,7 +414,13 @@ function convertMmxFile(inputPath, outputPath, outputRoot) {
     .replaceAll("{{content}}", htmlContent)
     .replaceAll("{{singlePageScript}}", singleFileContent)
     .replaceAll("{{prefix}}", prefix)
-    .replaceAll("{{lang}}", lang);
+    .replaceAll("{{lang}}", lang)
+    .replaceAll("{{plyrCSS}}", plyrCSS)
+    .replaceAll("{{plyrJS}}", plyrJS)
+    .replaceAll("{{mediumZommJS}}", mediumZoomJS)
+    .replaceAll("{{highlightJS}}", highlightJS)
+    .replaceAll("{{highlightCSSTheme}}", highlightCSSTheme);
+
     
   
   finalTemplate = applyPathPrefix(finalTemplate, prefix);

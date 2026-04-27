@@ -153,8 +153,15 @@ noCopy: no copy button
 noCodeBg: the code will not have a background and also with this it's enabled noCopy and noFormatted, and also will not work auto
 noFormatted: in the code if the text is too long instead of a scrollbar the text will continue in the next line like normal text
 
+:::code
+normal code
+:::
 
-Examples [here](pages/Examples/Code example.html)
+:::code auto
+code with auto highligthing
+:::
+
+More examples [here](pages/Examples/Code example.html)
 
 
 ## Links

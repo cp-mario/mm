@@ -514,9 +514,13 @@ codes.forEach(el => {
  * medium-zoom: Click on images to zoom in/out
  * Plyr.js: Initialize video and audio players
  */
+
+
 document.addEventListener('DOMContentLoaded', () => {
-  // medium-zoom: Click on images to zoom in/out
-  mediumZoom('.img');
+  const images = document.querySelectorAll('.img');
+  if (images.length > 0){
+    mediumZoom('.img');
+  }
 
   // Plyr.js: Initialize video and audio players
   // Only initialize if elements exist
