@@ -135,6 +135,7 @@ main .inlineImg {
 
 html {
     scroll-behavior: smooth;
+    scroll-padding-top: 10px;
 }
 
 /* codigo inline */
